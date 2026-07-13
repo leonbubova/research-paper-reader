@@ -130,6 +130,31 @@
 
   function esc(s){ return String(s).replace(/[&<>"]/g, function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
 
+  // ---------- read tracking ----------
+  var READ_KEY='rpr-read';
+  function getRead(){ try{ return new Set(JSON.parse(localStorage.getItem(READ_KEY)||'[]')); }catch(e){ return new Set(); } }
+  function saveRead(s){ try{ localStorage.setItem(READ_KEY, JSON.stringify(Array.from(s))); }catch(e){} }
+  function isRead(id){ return getRead().has(id); }
+  function setRead(id,v){ var s=getRead(); if(v) s.add(id); else s.delete(id); saveRead(s); }
+  function setupRead(id){
+    var read = isRead(id);
+    var meta = document.querySelector('header.lec .meta');
+    var btn = null;
+    if(meta){
+      btn = document.createElement('button'); btn.className='readbtn'; btn.type='button';
+      meta.appendChild(document.createTextNode(' \u00b7 ')); meta.appendChild(btn);
+      var paint=function(){ btn.textContent = read ? '\u2713 Read' : 'Mark as read'; btn.classList.toggle('is-read', read); btn.setAttribute('aria-pressed', read?'true':'false'); };
+      paint();
+      btn.addEventListener('click', function(){ read=!read; setRead(id,read); paint(); });
+    }
+    var done = read;
+    document.addEventListener('scroll', function(){
+      if(done) return;
+      var d=document.documentElement;
+      if(window.innerHeight+window.scrollY >= d.scrollHeight-4){ done=true; read=true; setRead(id,true); if(btn){ btn.textContent='\u2713 Read'; btn.classList.add('is-read'); btn.setAttribute('aria-pressed','true'); } }
+    }, {passive:true});
+  }
+
   // group a long text into paragraphs of ~n sentences (for readability of quoted abstracts)
   function groupSentences(text, n){
     var sents = text.match(/[^.!?]+[.!?]+["')\]]?(?:\s+|$)/g) || [text];
@@ -239,6 +264,7 @@
     }
     buildTOC(id);
     setupHovercards();
+    setupRead(id);
     setupBookmark(id);
     if(location.hash){ var t=document.getElementById(location.hash.slice(1)); if(t) scrollToEl(t, 'start'); }
   }

@@ -12,7 +12,7 @@
 }
 
 /* ---------------- font pairings (switchable) ---------------- */
-html, html[data-font="sans"]{ --font-body: var(--sans); --font-head: var(--sans); --body-base:18px; --body-lh:1.75; }
+html, html[data-font="sans"]{ --font-body: var(--sans); --font-head: var(--sans); --body-base:18.5px; --body-lh:1.75; }
 html[data-font="serif"]{ --font-body: var(--serif); --font-head: var(--sans); --body-base:19px; --body-lh:1.8; }
 html[data-font="georgia"]{ --font-body: Georgia, "Times New Roman", serif; --font-head: var(--sans); --body-base:18.5px; --body-lh:1.78; }
 html[data-font="book"]{ --font-body: var(--serif); --font-head: var(--serif); --body-base:19px; --body-lh:1.82; }
@@ -188,7 +188,7 @@ details.fig > summary::-webkit-details-marker{display:none}
 details.fig > summary:hover{color:var(--fg)}
 details.fig > summary .ico{color:var(--accent); font-size:.8em; transition:transform .2s}
 details.fig[open] > summary .ico{transform:rotate(90deg)}
-details.fig > summary .tag{margin-left:auto; font-size:.66rem; letter-spacing:.1em; text-transform:uppercase; color:var(--fg-faint); border:1px solid var(--line); border-radius:99px; padding:.12rem .6rem; font-weight:600}
+details.fig > summary .tag{margin-left:auto; flex:0 0 auto; white-space:nowrap; font-size:.66rem; letter-spacing:.08em; text-transform:uppercase; color:var(--fg-faint); border:1px solid var(--line); border-radius:99px; padding:.14rem .6rem; font-weight:600}
 details.fig .body{padding:0 1rem 1.1rem}
 details.fig .body img{display:block; width:100%; height:auto; max-width:100%; border-radius:8px; background:#fff}
 .zoom-wrap{position:relative; line-height:0}
@@ -221,12 +221,20 @@ img.zoom{cursor:zoom-in}
 #resume .x{border:0; background:none; color:var(--fg-faint); font-size:1.15em; line-height:1; cursor:pointer; padding:0 .1rem}
 #resume .x:hover{color:var(--fg)}
 
+/* ---- read tracking ---- */
+.readbtn{font-family:var(--sans); font-size:.9rem; background:none; border:0; color:var(--accent); cursor:pointer; padding:0}
+.readbtn:hover{text-decoration:underline}
+.readbtn.is-read{color:var(--accent-2)}
+.item .ready.read-badge{color:var(--accent-2)}
+.item.done .t{color:var(--fg-dim)}
+.hero .progress{color:var(--accent-2)}
+
 /* ---- desktop table of contents (scrollspy) ---- */
 .toc{position:fixed; top:50%; transform:translateY(-50%); left:2rem; width:13rem;
   max-height:calc(100vh - 90px); overflow-y:auto; font-family:var(--sans); font-size:.84rem;
   display:none; z-index:40; padding-right:.4rem}
-.toc::-webkit-scrollbar{width:6px}
-.toc::-webkit-scrollbar-thumb{background:var(--line); border-radius:3px}
+.toc{scrollbar-width:none}
+.toc::-webkit-scrollbar{width:0; height:0}
 .toc .toc-meta{color:var(--fg-faint); font-size:.74rem; letter-spacing:.01em; margin-bottom:1.3rem; line-height:1.5}
 .toc .toc-meta strong{color:var(--fg-dim); font-weight:600}
 .toc nav ul{list-style:none; margin:0; padding:0}

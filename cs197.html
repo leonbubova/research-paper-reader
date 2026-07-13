@@ -100,5 +100,15 @@ var inc=document.getElementById('inc'),dec=document.getElementById('dec');
 if(inc)inc.addEventListener('click',function(){setScale(scale+0.06);});
 if(dec)dec.addEventListener('click',function(){setScale(scale-0.06);});})();
 </script>
+<script>
+(function(){var read;try{read=new Set(JSON.parse(localStorage.getItem('rpr-read')||'[]'));}catch(e){read=new Set();}
+var rows=document.querySelectorAll('.item a.row[href*="lecture.html?l="]');var total=0,done=0;
+rows.forEach(function(a){var m=a.getAttribute('href').match(/l=([0-9\-]+)/);if(!m)return;total++;
+ var b=a.querySelector('.ready');
+ if(read.has(m[1])){done++;a.parentElement.classList.add('done');if(b){b.textContent='\u2713 read';b.classList.add('read-badge');}}});
+var by=document.querySelector('.hero .by');
+if(by&&total){var s=document.createElement('span');s.className='progress';s.textContent=' \u00b7 '+done+'/'+total+' read';by.appendChild(s);}
+})();
+</script>
 </body>
 </html>
