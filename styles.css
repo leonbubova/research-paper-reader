@@ -235,12 +235,15 @@ img.zoom{cursor:zoom-in}
 @media (max-width:640px){ #tts{left:1rem; bottom:1rem} }
 
 /* ---- read tracking ---- */
-.readbtn{font-family:var(--sans); font-size:.9rem; background:none; border:0; color:var(--accent); cursor:pointer; padding:0}
-.readbtn:hover{text-decoration:underline}
-.readbtn.is-read{color:var(--accent-2)}
+.readrow{margin-top:1.4rem}
+.readbtn{font-family:var(--sans); font-size:.82rem; font-weight:600; background:var(--bg-raise); border:1px solid var(--line); color:var(--fg-dim); cursor:pointer; padding:.4rem .95rem; border-radius:99px; display:inline-flex; align-items:center; gap:.35rem}
+.readbtn:hover{color:var(--fg); border-color:var(--accent)}
+.readbtn.is-read{color:var(--bg); background:var(--accent); border-color:var(--accent)}
 .item .ready.read-badge{color:var(--accent-2)}
 .item.done .t{color:var(--fg-dim)}
-.hero .progress{color:var(--accent-2)}
+.hero .progress, .cardprog{color:var(--accent-2)}
+.pager a.overview{text-align:center}
+.pager .pg-spacer{flex:1}
 
 /* ---- desktop table of contents (scrollspy) ---- */
 .toc{position:fixed; top:50%; transform:translateY(-50%); left:2rem; width:13rem;

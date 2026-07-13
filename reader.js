@@ -138,11 +138,11 @@
   function setRead(id,v){ var s=getRead(); if(v) s.add(id); else s.delete(id); saveRead(s); }
   function setupRead(id){
     var read = isRead(id);
-    var meta = document.querySelector('header.lec .meta');
+    var header = document.querySelector('header.lec');
     var btn = null;
-    if(meta){
+    if(header){
       btn = document.createElement('button'); btn.className='readbtn'; btn.type='button';
-      meta.appendChild(document.createTextNode(' \u00b7 ')); meta.appendChild(btn);
+      var row=document.createElement('div'); row.className='readrow'; row.appendChild(btn); header.appendChild(row);
       var paint=function(){ btn.textContent = read ? '\u2713 Read' : 'Mark as read'; btn.classList.toggle('is-read', read); btn.setAttribute('aria-pressed', read?'true':'false'); };
       paint();
       btn.addEventListener('click', function(){ read=!read; setRead(id,read); paint(); });
@@ -262,11 +262,14 @@
       lb.addEventListener('click', function(){ lb.classList.remove('open'); lbi.src=''; });
       document.addEventListener('keydown', function(e){ if(e.key==='Escape') lb.classList.remove('open'); });
     }
+    document.querySelectorAll('.mdbody p').forEach(wrapSentences);
+    document.querySelectorAll('.mdbody p .s').forEach(function(s){ if(!s.textContent.trim()) s.remove(); });
     buildTOC(id);
     setupHovercards();
     setupRead(id);
     setupTTS(id);
     setupBookmark(id);
+    buildPager(id);
     if(location.hash){ var t=document.getElementById(location.hash.slice(1)); if(t) scrollToEl(t, 'start'); }
   }
 
@@ -403,6 +406,20 @@
     }, {passive:true});
   }
 
+  var LORDER = ["01","02","03","04","05","06-07","08-09","10-11","12-13","14-15","16-17","18","19","20","21"];
+  var LTITLES = {"01":"You Complete My Sandwiches","02":"The Zen of Python","03":"Shoulders of Giants","04":"In-Tune with Jazz Hands","05":"Lightning McTorch","06-07":"Moonwalking with PyTorch","08-09":"Experiment Organization Sparks Joy","10-11":"I Dreamed a Dream","12-13":"Today Was a Fairytale","14-15":"Deep Learning on Cloud Nine","16-17":"Make Your Dreams Come Tuned","18":"Research Productivity Power-Ups","19":"The AI Ninja","20":"Bejeweled","21":"Model Showdown"};
+  function buildPager(id){
+    var root=document.getElementById('doc'); if(!root) return;
+    var i=LORDER.indexOf(id);
+    var prev=i>0?LORDER[i-1]:null, next=(i>=0&&i<LORDER.length-1)?LORDER[i+1]:null;
+    var h='<nav class="pager" aria-label="Lecture navigation">';
+    h+= prev? '<a class="prev" href="lecture.html?l='+prev+'"><span class="lab">Previous</span>'+esc(LTITLES[prev]||('Lecture '+prev))+'</a>' : '<span class="pg-spacer"></span>';
+    h+= '<a class="overview" href="cs197.html"><span class="lab">Overview</span>All CS197 lectures</a>';
+    h+= next? '<a class="next" href="lecture.html?l='+next+'"><span class="lab">Next</span>'+esc(LTITLES[next]||('Lecture '+next))+'</a>' : '<span class="pg-spacer"></span>';
+    h+='</nav>';
+    root.insertAdjacentHTML('beforeend', h);
+  }
+
   // ---------- read aloud (Web Speech API — free, no key, offline) ----------
   function setupTTS(id){
     var synth = window.speechSynthesis;
@@ -490,10 +507,6 @@
   function setupBookmark(id){
     var KEY = 'cs197-bookmark-' + id;
     var mdbody = document.querySelector('.mdbody'); if(!mdbody) return;
-
-    mdbody.querySelectorAll('p').forEach(wrapSentences);
-    // drop empty sentence spans
-    mdbody.querySelectorAll('p .s').forEach(function(s){ if(!s.textContent.trim()) s.remove(); });
 
     // ordered targets: sentences, list items, headings, and whole special blocks
     var targets = Array.prototype.slice.call(
