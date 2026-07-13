@@ -1,0 +1,115 @@
+{
+  "sample": "Maybe you're trying to get into AI research, or you're in industry, presenting the latest advances to your colleagues. Either way, you'll face the task of understanding the state of a field and the gaps left to fill. A structured approach makes that far less daunting. Let's walk through how to read a research paper.",
+  "voices": [
+    {
+      "slug": "gb_jane_sarcasm",
+      "name": "Jane - Sarcasm",
+      "gender": "female",
+      "lang": "en_gb",
+      "tags": [
+        "dry",
+        "wry",
+        "sarcastic"
+      ]
+    },
+    {
+      "slug": "gb_oliver_neutral",
+      "name": "Oliver - Neutral",
+      "gender": "male",
+      "lang": "en_gb",
+      "tags": [
+        "calm",
+        "even",
+        "neutral"
+      ]
+    },
+    {
+      "slug": "en_paul_angry",
+      "name": "Paul - Angry",
+      "gender": "male",
+      "lang": "en_us",
+      "tags": [
+        "raw",
+        "gruff",
+        "angry"
+      ]
+    },
+    {
+      "slug": "en_paul_cheerful",
+      "name": "Paul - Cheerful",
+      "gender": "male",
+      "lang": "en_us",
+      "tags": [
+        "upbeat",
+        "breezy",
+        "cheerful"
+      ]
+    },
+    {
+      "slug": "en_paul_confident",
+      "name": "Paul - Confident",
+      "gender": "male",
+      "lang": "en_us",
+      "tags": [
+        "bold",
+        "punchy",
+        "confident"
+      ]
+    },
+    {
+      "slug": "en_paul_excited",
+      "name": "Paul - Excited",
+      "gender": "male",
+      "lang": "en_us",
+      "tags": [
+        "bouncy",
+        "spirited",
+        "excited"
+      ]
+    },
+    {
+      "slug": "en_paul_frustrated",
+      "name": "Paul - Frustrated",
+      "gender": "male",
+      "lang": "en_us",
+      "tags": [
+        "edgy",
+        "snappy",
+        "frustrated"
+      ]
+    },
+    {
+      "slug": "en_paul_happy",
+      "name": "Paul - Happy",
+      "gender": "male",
+      "lang": "en_us",
+      "tags": [
+        "sunny",
+        "easygoing",
+        "happy"
+      ]
+    },
+    {
+      "slug": "en_paul_neutral",
+      "name": "Paul - Neutral",
+      "gender": "male",
+      "lang": "en_us",
+      "tags": [
+        "relaxed",
+        "balanced",
+        "neutral"
+      ]
+    },
+    {
+      "slug": "en_paul_sad",
+      "name": "Paul - Sad",
+      "gender": "male",
+      "lang": "en_us",
+      "tags": [
+        "heavy",
+        "hushed",
+        "sad"
+      ]
+    }
+  ]
+}

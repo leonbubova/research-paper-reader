@@ -1,0 +1,34 @@
+name: Prerender lecture audio
+on:
+  push:
+    paths: ['md/*.md']
+  workflow_dispatch:
+    inputs:
+      force:
+        description: 'Rebuild all lectures'
+        type: boolean
+        default: false
+permissions:
+  contents: write
+concurrency:
+  group: tts
+  cancel-in-progress: false
+jobs:
+  tts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - run: sudo apt-get update && sudo apt-get install -y ffmpeg
+      - name: Generate narration
+        env:
+          MISTRAL_API_KEY: ${{ secrets.MISTRAL_API_KEY }}
+          TTS_VOICE: ${{ vars.TTS_VOICE || 'en_paul_neutral' }}
+        run: python build/tts.py ${{ github.event.inputs.force == 'true' && '--force' || '' }}
+      - name: Commit audio
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add md/audio
+          git diff --cached --quiet || (git commit -m "chore: prerender lecture audio [skip ci]" && git push)
