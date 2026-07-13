@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="vscode">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CS197 Reader - Harvard AI Research Experiences</title>
+<link rel="stylesheet" href="styles.css">
+<script>(function(){try{var d=document.documentElement,t=localStorage.getItem('cs197-theme'),f=localStorage.getItem('cs197-font'),z=localStorage.getItem('cs197-size');if(t)d.setAttribute('data-theme',t);d.setAttribute('data-font',f||'sans');if(z)d.style.setProperty('--size-scale',z);}catch(e){}})();</script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<nav class="topbar" aria-label="Primary">
+  <div class="row">
+    <a class="home" href="index.html">Research Paper Reader</a>
+    <span class="crumb">Harvard CS197 · AI Research Experiences</span>
+    <div class="right">
+      <a href="benchmark.html">Benchmark</a>
+      <div class="sizer" role="group" aria-label="Text size">
+        <button id="dec" type="button" aria-label="Smaller text">A−</button>
+        <button id="inc" type="button" aria-label="Larger text">A+</button>
+      </div>
+      <select id="font" class="themepick" aria-label="Reading font">
+        <option value="sans">Sans</option>
+        <option value="serif">Serif</option>
+        <option value="georgia">Georgia</option>
+        <option value="book">Book</option>
+      </select>
+      <select id="theme" class="themepick" aria-label="Colour theme">
+        <option value="vscode">VS Code Dark</option>
+        <option value="onedark">One Dark</option>
+        <option value="github">GitHub Dark</option>
+        <option value="tokyonight">Tokyo Night</option>
+        <option value="paper">Paper (light)</option>
+      </select>
+    </div>
+  </div>
+</nav>
+
+<div class="wrap wide">
+<main id="main">
+  <section class="hero">
+    <p class="kicker">Harvard CS197 · Fall 2022</p>
+    <h1>AI Research Experiences</h1>
+    <p class="intro">A clean, readable, Markdown-sourced edition of Pranav Rajpurkar's CS197 lecture notes - the craft of doing AI research, from reading papers to shipping them. Built to read comfortably <em>and</em> to be fed straight to an agent.</p>
+    <p class="by">Original notes by <a href="https://cs197.seas.harvard.edu/" target="_blank" rel="noopener">Pranav Rajpurkar (course site ↗)</a>. Each lecture's source Markdown lives in <code>/md</code>.</p>
+  </section>
+
+  <div class="unit"><h2>Getting started &amp; foundations</h2><span class="rule"></span></div>
+  <ul class="list">
+    <li class="item"><a class="row" href="lecture.html?l=01"><span class="num">01</span><span><span class="t">You Complete My Sandwiches</span><span class="d">Exciting advances with AI language models</span></span><span class="ready">ready</span></a></li>
+    <li class="item"><a class="row" href="lecture.html?l=02"><span class="num">02</span><span><span class="t">The Zen of Python</span><span class="d">Software engineering fundamentals</span></span><span class="ready">ready</span></a></li>
+    <li class="item"><a class="row" href="lecture.html?l=03"><span class="num">03</span><span><span class="t">Shoulders of Giants</span><span class="d">Reading AI research papers</span></span><span class="ready">ready</span></a></li>
+  </ul>
+
+  <div class="unit"><h2>Building &amp; training models</h2><span class="rule"></span></div>
+  <ul class="list">
+    <li class="item"><a class="row" href="lecture.html?l=04"><span class="num">04</span><span><span class="t">In-Tune with Jazz Hands</span><span class="d">Fine-tuning a language model with Hugging Face</span></span><span class="ready">ready</span></a></li>
+    <li class="item"><a class="row" href="lecture.html?l=05"><span class="num">05</span><span><span class="t">Lightning McTorch</span><span class="d">Fine-tuning a Vision Transformer with Lightning</span></span><span class="ready">ready</span></a></li>
+    <li class="item"><a class="row" href="lecture.html?l=06-07"><span class="num">6–7</span><span><span class="t">Moonwalking with PyTorch</span><span class="d">Solidifying PyTorch fundamentals</span></span><span class="ready">ready</span></a></li>
+    <li class="item"><a class="row" href="lecture.html?l=08-09"><span class="num">8–9</span><span><span class="t">Experiment Organization Sparks Joy</span><span class="d">Weights &amp; Biases and Hydra</span></span><span class="ready">ready</span></a></li>
+  </ul>
+
+  <div class="unit"><h2>Ideas, writing &amp; infrastructure</h2><span class="rule"></span></div>
+  <ul class="list">
+    <li class="item"><a class="row" href="lecture.html?l=10-11"><span class="num">10–11</span><span><span class="t">I Dreamed a Dream</span><span class="d">A framework for generating research ideas</span></span><span class="ready">ready</span></a></li>
+    <li class="item"><a class="row" href="lecture.html?l=12-13"><span class="num">12–13</span><span><span class="t">Today Was a Fairytale</span><span class="d">Structuring a research paper</span></span><span class="ready">ready</span></a></li>
+    <li class="item"><a class="row" href="lecture.html?l=14-15"><span class="num">14–15</span><span><span class="t">Deep Learning on Cloud Nine</span><span class="d">AWS EC2 for deep learning + CheXzero</span></span><span class="ready">ready</span></a></li>
+    <li class="item"><a class="row" href="lecture.html?l=16-17"><span class="num">16–17</span><span><span class="t">Make Your Dreams Come Tuned</span><span class="d">Fine-tuning your Stable Diffusion model</span></span><span class="ready">ready</span></a></li>
+  </ul>
+
+  <div class="unit"><h2>Doing research well</h2><span class="rule"></span></div>
+  <ul class="list">
+    <li class="item"><a class="row" href="lecture.html?l=18"><span class="num">18</span><span><span class="t">Research Productivity Power-Ups</span><span class="d">Managing your time and efforts</span></span><span class="ready">ready</span></a></li>
+    <li class="item"><a class="row" href="lecture.html?l=19"><span class="num">19</span><span><span class="t">The AI Ninja</span><span class="d">Making progress and impact in AI research</span></span><span class="ready">ready</span></a></li>
+    <li class="item"><a class="row" href="lecture.html?l=20"><span class="num">20</span><span><span class="t">Bejeweled</span><span class="d">Tips for creating high-quality slides</span></span><span class="ready">ready</span></a></li>
+    <li class="item"><a class="row" href="lecture.html?l=21"><span class="num">21</span><span><span class="t">Model Showdown</span><span class="d">Statistical testing to compare model performances</span></span><span class="ready">ready</span></a></li>
+  </ul>
+
+  <div class="unit"><h2>Experiment</h2><span class="rule"></span></div>
+  <ul class="list">
+    <li class="item"><a class="row" href="benchmark.html"><span class="num">↳</span><span><span class="t">Research-with-context vs. vanilla agents</span><span class="d">A benchmark: does feeding these notes to an agent beat an off-the-shelf model?</span></span><span class="ready">design</span></a></li>
+  </ul>
+</main>
+
+<footer>
+  <p>Reader edition of Harvard CS197 “AI Research Experiences” by Pranav Rajpurkar. Content © the original author; this is a re-typeset reading copy for study. Lectures marked <em>building</em> are being transcribed from the public notes. <a href="https://cs197.seas.harvard.edu/" target="_blank" rel="noopener">Course site ↗</a></p>
+</footer>
+</div>
+
+<script>
+(function(){var d=document.documentElement;
+function wire(id,attr,key,def){var s=document.getElementById(id);if(!s)return;s.value=d.getAttribute(attr)||def;
+s.addEventListener('change',function(){d.setAttribute(attr,s.value);try{localStorage.setItem(key,s.value);}catch(e){}});}
+wire('theme','data-theme','cs197-theme','vscode');wire('font','data-font','cs197-font','sans');
+var scale=parseFloat((function(){try{return localStorage.getItem('cs197-size');}catch(e){}})())||1;
+function setScale(v){scale=Math.min(1.4,Math.max(0.85,Math.round(v*100)/100));d.style.setProperty('--size-scale',scale);try{localStorage.setItem('cs197-size',scale);}catch(e){}}
+setScale(scale);
+var inc=document.getElementById('inc'),dec=document.getElementById('dec');
+if(inc)inc.addEventListener('click',function(){setScale(scale+0.06);});
+if(dec)dec.addEventListener('click',function(){setScale(scale-0.06);});})();
+</script>
+</body>
+</html>

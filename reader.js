@@ -100,7 +100,7 @@
 
     document.title = 'Lecture ' + (fm.lecture||id) + ' · ' + (fm.title||'') + ' — CS197 Reader';
     var crumb = document.querySelector('.topbar .crumb');
-    if(crumb) crumb.textContent = 'Lecture ' + (fm.lecture||id) + (fm.title? ' — '+fm.title : '');
+    if(crumb) crumb.innerHTML = '<a href="cs197.html" style="color:inherit;text-decoration:none">CS197</a> \u00b7 Lecture ' + esc(fm.lecture||id) + (fm.title? ' \u00b7 '+esc(fm.title) : '');
     var srcA = document.getElementById('srclink');
     if(srcA && fm.source_notes) srcA.href = fm.source_notes;
 
