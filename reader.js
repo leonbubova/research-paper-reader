@@ -265,6 +265,7 @@
     buildTOC(id);
     setupHovercards();
     setupRead(id);
+    setupTTS(id);
     setupBookmark(id);
     if(location.hash){ var t=document.getElementById(location.hash.slice(1)); if(t) scrollToEl(t, 'start'); }
   }
@@ -400,6 +401,66 @@
         ticking=false;
       });
     }, {passive:true});
+  }
+
+  // ---------- read aloud (Web Speech API — free, no key, offline) ----------
+  function setupTTS(id){
+    var synth = window.speechSynthesis;
+    if(!synth || !window.SpeechSynthesisUtterance) return;
+    var mdbody = document.querySelector('.mdbody'); if(!mdbody) return;
+    var items = Array.prototype.slice.call(mdbody.querySelectorAll('h2, h3, p > .s, li'))
+      .filter(function(el){ return el.textContent.trim().length; });
+    if(!items.length) return;
+
+    var idx = 0, playing = false, rate = 1, voice = null;
+    function pickVoice(){ var vs = synth.getVoices()||[]; voice = vs.filter(function(v){return /^en(-|_|$)/i.test(v.lang);})[0] || vs[0] || null; }
+    pickVoice(); try{ synth.onvoiceschanged = pickVoice; }catch(e){}
+
+    var bar = document.createElement('div'); bar.id='tts';
+    var play = document.createElement('button'); play.type='button'; play.setAttribute('aria-label','Play'); play.innerHTML='▶';
+    var lbl  = document.createElement('span'); lbl.className='lbl'; lbl.textContent='Listen';
+    var rateb= document.createElement('button'); rateb.type='button'; rateb.className='rate'; rateb.setAttribute('aria-label','Speed'); rateb.textContent='1x'; rateb.style.display='none';
+    var stop = document.createElement('button'); stop.type='button'; stop.setAttribute('aria-label','Stop'); stop.innerHTML='■'; stop.style.display='none';
+    bar.appendChild(play); bar.appendChild(lbl); bar.appendChild(rateb); bar.appendChild(stop);
+    document.body.appendChild(bar);
+
+    function hl(el){
+      mdbody.querySelectorAll('.speaking').forEach(function(e){ e.classList.remove('speaking'); });
+      if(el){ el.classList.add('speaking'); var r=el.getBoundingClientRect();
+        if(r.top<80 || r.bottom>window.innerHeight-80) scrollToEl(el,'center'); }
+    }
+    function speak(i){
+      if(i>=items.length){ setRead(id,true); var rb=document.querySelector('.readbtn'); if(rb){rb.textContent='✓ Read'; rb.classList.add('is-read');} finish(); return; }
+      idx=i; hl(items[i]);
+      var u=new SpeechSynthesisUtterance(items[i].textContent.replace(/\s+/g,' ').trim());
+      u.rate=rate; if(voice) u.voice=voice;
+      u.onend=function(){ if(playing) speak(idx+1); };
+      u.onerror=function(){ if(playing) speak(idx+1); };
+      synth.speak(u);
+    }
+    function start(){ synth.cancel(); playing=true; setUI(); speak(idx); }
+    function pause(){ playing=false; try{synth.pause();}catch(e){} setUI(); }
+    function resume(){ playing=true; try{synth.resume();}catch(e){} setUI(); }
+    function finish(){ playing=false; synth.cancel(); hl(null); idx=0; setUI(); }
+    function setUI(){
+      play.innerHTML = playing ? '❙❙' : '▶';
+      play.setAttribute('aria-label', playing?'Pause':'Play');
+      lbl.textContent = playing ? 'Reading' : ((idx>0) ? 'Paused' : 'Listen');
+      stop.style.display  = (playing||idx>0) ? '' : 'none';
+      rateb.style.display = (playing||idx>0) ? '' : 'none';
+    }
+    play.addEventListener('click', function(){
+      if(playing) pause();
+      else if(synth.paused && idx>0) resume();
+      else start();
+    });
+    stop.addEventListener('click', finish);
+    rateb.addEventListener('click', function(){
+      var rates=[1,1.25,1.5,1.75,0.85]; rate=rates[(rates.indexOf(rate)+1)%rates.length]; rateb.textContent=rate+'x';
+      if(playing){ synth.cancel(); speak(idx); }
+    });
+    window.addEventListener('beforeunload', function(){ synth.cancel(); });
+    setUI();
   }
 
   // ---------- bookmark / Lesezeichen — sentence granularity ----------
