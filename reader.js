@@ -85,7 +85,7 @@
     if(b.type==='added'){
       return '<aside class="added" aria-label="Added explanation, not part of the original lecture">'+
         '<p class="added-h"><span class="added-ico" aria-hidden="true">✎</span> Added explanation'+
-        (b.title? ' — '+esc(b.title):'') +'</p>'+ marked.parse(b.md) +'</aside>';
+        (b.title? ' : '+esc(b.title):'') +'</p>'+ marked.parse(b.md) +'</aside>';
     }
     return '';
   }
@@ -98,7 +98,7 @@
     var html = marked.parse(body);
     html = html.replace(/<p>@@BLK(\d+)@@<\/p>/g, function(_, n){ return blockHTML(blocks[+n]); });
 
-    document.title = 'Lecture ' + (fm.lecture||id) + ' · ' + (fm.title||'') + ' — CS197 Reader';
+    document.title = 'Lecture ' + (fm.lecture||id) + ' · ' + (fm.title||'') + ' · Research Paper Reader';
     var crumb = document.querySelector('.topbar .crumb');
     if(crumb) crumb.innerHTML = '<a href="cs197.html" style="color:inherit;text-decoration:none">CS197</a> \u00b7 Lecture ' + esc(fm.lecture||id) + (fm.title? ' \u00b7 '+esc(fm.title) : '');
     var srcA = document.getElementById('srclink');
