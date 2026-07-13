@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="vscode" data-font="sans">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Benchmark · Research-with-context vs. vanilla - CS197 Reader</title>
+<link rel="stylesheet" href="styles.css">
+<script>(function(){try{var d=document.documentElement,t=localStorage.getItem('cs197-theme'),f=localStorage.getItem('cs197-font'),z=localStorage.getItem('cs197-size');if(t)d.setAttribute('data-theme',t);d.setAttribute('data-font',f||'sans');if(z)d.style.setProperty('--size-scale',z);}catch(e){}})();</script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<div id="progress" aria-hidden="true"></div>
+
+<nav class="topbar" aria-label="Primary">
+  <div class="row">
+    <a class="home" href="index.html">← CS197 Reader</a>
+    <span class="crumb">Experiment · Research-with-context vs. vanilla</span>
+    <div class="right">
+      <div class="sizer" role="group" aria-label="Text size">
+        <button id="dec" type="button" aria-label="Smaller text">A−</button>
+        <button id="inc" type="button" aria-label="Larger text">A+</button>
+      </div>
+      <select id="font" class="themepick" aria-label="Reading font">
+        <option value="sans">Sans</option><option value="serif">Serif</option>
+        <option value="georgia">Georgia</option><option value="book">Book</option>
+      </select>
+      <select id="theme" class="themepick" aria-label="Colour theme">
+        <option value="vscode">VS Code Dark</option><option value="onedark">One Dark</option>
+        <option value="github">GitHub Dark</option><option value="tokyonight">Tokyo Night</option>
+        <option value="paper">Paper (light)</option>
+      </select>
+    </div>
+  </div>
+</nav>
+
+<div class="wrap">
+<main id="main">
+  <header class="lec">
+    <p class="kicker">CS197 Reader · Experiment</p>
+    <h1>Research-with-context vs. vanilla agents</h1>
+    <p class="subtitle">Does grounding an agent in these lecture notes beat an off-the-shelf frontier model at doing real research work?</p>
+    <p class="meta">A benchmark design - not yet run. Contributions welcome.</p>
+  </header>
+
+  <div class="mdbody">
+    <h2 id="question">The question</h2>
+    <p>Frontier assistants from Anthropic, OpenAI and others already do “research” out of the box: they read papers, summarise, and propose ideas. The claim worth testing is narrower and more useful: <strong>if you first feed an agent a compact, well-structured methodology - the CS197 notes in this reader - does it do measurably better research work than the same model with no such grounding?</strong></p>
+    <p>The notes encode <em>process</em>, not facts: how to read wide then deep, how to build a problem–solution chain, how to keep a “to understand” list, how to structure a paper. That's exactly the kind of tacit skill a base model is uneven at. So this is a test of whether cheap context can substitute for it.</p>
+
+    <h2 id="hypothesis">Hypothesis</h2>
+    <p>An agent given the CS197 methodology as context produces literature reviews and research plans that are more <em>structured, better sourced, and more honest about gaps</em> than the same model run vanilla - at a small, fixed token cost - and the gap widens on unfamiliar topics.</p>
+
+    <h2 id="conditions">Conditions</h2>
+    <p>Hold the model fixed and vary only the context. Run each condition on the same model (e.g. Claude and a GPT model), so differences are attributable to context, not model choice.</p>
+    <ul>
+      <li><strong>A - Vanilla:</strong> the model with a plain instruction (“research topic X and write a literature review / research proposal”). No extra context. This is the “straight from the AI company” baseline.</li>
+      <li><strong>B - Notes in context:</strong> the same prompt, preceded by the relevant lecture Markdown from <code>/md</code> (e.g. Lecture 3 for a literature-review task).</li>
+      <li><strong>C - Notes + tools:</strong> condition B, plus web/search and PDF-reading tools, so the methodology can actually drive real retrieval.</li>
+      <li><strong>D - Ablation:</strong> notes with the <em>process</em> stripped out (only the topic facts left), to check that any gain comes from methodology rather than from extra tokens.</li>
+    </ul>
+
+    <h2 id="tasks">Tasks</h2>
+    <p>Use topics the model is unlikely to have deep priors on, so grounding can show. For each topic, three deliverables:</p>
+    <ol>
+      <li><strong>Literature map</strong> - identify the key methods, datasets, benchmarks and one survey; summarise each in a few bullets with links (the Lecture 3 “reading wide” output).</li>
+      <li><strong>Deep read</strong> - pick one paper, extract its problem–solution chain, and produce a “to understand” list.</li>
+      <li><strong>Research proposal</strong> - a one-page, testable idea with a method sketch and an evaluation plan.</li>
+    </ol>
+
+    <h2 id="metrics">What to measure</h2>
+    <ul>
+      <li><strong>Citation validity</strong> - fraction of cited papers that exist and actually support the claim (catches hallucinated references).</li>
+      <li><strong>Coverage</strong> - recall of the genuinely important works for the topic, scored against an expert-built key set.</li>
+      <li><strong>Structure</strong> - does the output contain the methodology's artifacts (problem–solution chain, to-understand list, wide-then-deep flow)?</li>
+      <li><strong>Calibration / honesty</strong> - does it flag what it doesn't know, instead of confabulating?</li>
+      <li><strong>Cost</strong> - tokens and wall-clock, so any quality gain is judged against its price.</li>
+    </ul>
+
+    <div class="tip">
+      <p class="tip-h">Scoring</p>
+      <p>Blind the grader to the condition. Use a rubric (1–5 per metric) applied by a human expert and, separately, by an LLM judge given the rubric; report both and their agreement. Randomise task order; run ≥3 seeds per cell and report variance, not just means.</p>
+    </div>
+
+    <h2 id="run">How to run it with this reader</h2>
+    <p>The Markdown files are the whole point: each lecture's canonical source is a plain <code>.md</code> under <code>/md</code>, so an agent can fetch it directly.</p>
+    <pre><code># condition B input = notes + task
+cat md/lecture-03.md > context.md
+# then prompt your model:
+#   [context.md]
+#   Task: for the topic "&lt;X&gt;", produce a literature map, a deep read,
+#   and a one-page research proposal, following the methodology above.</code></pre>
+    <p>Point the agent at <code>http://localhost:8000/md/lecture-03.md</code> (while the reader's local server is running) or hand it the file. Keep the vanilla condition's prompt byte-identical minus the context block.</p>
+
+    <h2 id="threats">Threats to validity</h2>
+    <ul>
+      <li><strong>Contamination:</strong> the CS197 notes and the example papers are public and may be in pretraining. Prefer recent topics and hold-out papers; the ablation (D) helps separate methodology from memorised content.</li>
+      <li><strong>Token confound:</strong> condition B adds tokens. D controls for “more context helps regardless of what it is.”</li>
+      <li><strong>Judge bias:</strong> an LLM judge may prefer verbose, structured text. Anchor with a human expert on a subsample and report agreement.</li>
+      <li><strong>Topic luck:</strong> few topics = high variance. Use enough topics to separate signal from noise.</li>
+    </ul>
+
+    <h2 id="status">Status</h2>
+    <p>This is a design, not a result. It is the reason the reader is Markdown-first: the content doubles as an agent's context pack. Lecture 3 is ready to use as the grounding for a literature-review run today; the remaining lectures are being transcribed.</p>
+  </div>
+
+  <div class="pager">
+    <a class="prev" href="index.html"><span class="lab">Back</span>All lectures</a>
+    <a class="next" href="lecture.html?l=03"><span class="lab">Grounding used</span>Lecture 3 · Shoulders of Giants</a>
+  </div>
+</main>
+<footer>
+  <p>Part of the CS197 Reader. The lecture content is by Pranav Rajpurkar; this experiment design is an addition for this reader.</p>
+</footer>
+</div>
+
+<script>
+(function(){var d=document.documentElement;
+function wire(id,attr,key,def){var s=document.getElementById(id);if(!s)return;s.value=d.getAttribute(attr)||def;
+s.addEventListener('change',function(){d.setAttribute(attr,s.value);try{localStorage.setItem(key,s.value);}catch(e){}});}
+wire('theme','data-theme','cs197-theme','vscode');wire('font','data-font','cs197-font','sans');
+var scale=parseFloat((function(){try{return localStorage.getItem('cs197-size');}catch(e){}})())||1;
+function setScale(v){scale=Math.min(1.4,Math.max(0.85,Math.round(v*100)/100));d.style.setProperty('--size-scale',scale);try{localStorage.setItem('cs197-size',scale);}catch(e){}}
+setScale(scale);
+var inc=document.getElementById('inc'),dec=document.getElementById('dec');
+if(inc)inc.addEventListener('click',function(){setScale(scale+0.06);});
+if(dec)dec.addEventListener('click',function(){setScale(scale-0.06);});
+var bar=document.getElementById('progress');
+if(bar){var f=function(){var h=document.documentElement,m=h.scrollHeight-h.clientHeight;bar.style.width=(m>0?h.scrollTop/m*100:0)+'%';};document.addEventListener('scroll',f,{passive:true});f();}
+
+// fast, capped smooth scroll
+function scrollToEl(el){ if(!el) return;
+  var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var start=window.pageYOffset, target=Math.max(0,start+el.getBoundingClientRect().top-72), dist=target-start;
+  if(reduce||Math.abs(dist)<4){window.scrollTo(0,target);return;}
+  var dur=Math.min(420,Math.max(200,Math.abs(dist)*0.22)),t0=null;
+  function ease(t){return t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;}
+  function step(ts){if(t0===null)t0=ts;var p=Math.min(1,(ts-t0)/dur);window.scrollTo(0,start+dist*ease(p));if(p<1)requestAnimationFrame(step);}
+  requestAnimationFrame(step);
+}
+// build the left menu (same look as the lectures)
+var body=document.querySelector('.mdbody');
+if(body && window.innerWidth>=1200){
+  var heads=[].slice.call(body.querySelectorAll('h2'));
+  heads.forEach(function(h){ if(!h.id) h.id=h.textContent.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+    var a=document.createElement('a');a.href='#'+h.id;a.className='anchor';a.textContent='#';
+    a.addEventListener('click',function(e){e.preventDefault();scrollToEl(h);history.replaceState(null,'','#'+h.id);});h.appendChild(a);});
+  function words(h){var n=0,el=h.nextElementSibling;while(el&&el.tagName!=='H2'){n+=(el.innerText.trim().match(/\S+/g)||[]).length;el=el.nextElementSibling;}return n;}
+  var tot=(body.innerText.trim().match(/\S+/g)||[]).length;
+  var toc=document.createElement('nav');toc.className='toc';toc.setAttribute('aria-label','On this page');
+  toc.innerHTML='<div class="toc-meta"><strong>Experiment</strong><br>'+tot.toLocaleString()+' words · ~'+Math.max(1,Math.round(tot/200))+' min</div><nav><ul>'+
+    heads.map(function(h){var w=words(h);return '<li><a class="toclink" href="#'+h.id+'"><span class="tt">'+h.textContent.replace(/#$/,'').trim()+'</span>'+(w?'<span class="wc">'+w+'</span>':'')+'</a></li>';}).join('')+'</ul></nav>';
+  document.body.appendChild(toc);
+  var links=[].slice.call(toc.querySelectorAll('.toclink')),map={};
+  var active=null;function setA(a){if(active===a)return;if(active)active.classList.remove('active');active=a;if(a)a.classList.add('active');}
+  links.forEach(function(a){map[a.getAttribute('href').slice(1)]=a;a.addEventListener('click',function(e){var el=document.getElementById(a.getAttribute('href').slice(1));if(el){e.preventDefault();scrollToEl(el);setA(a);history.replaceState(null,'',a.getAttribute('href'));}});});
+  function atBottom(){return window.innerHeight+window.scrollY>=document.documentElement.scrollHeight-2;}
+  var tick=false;document.addEventListener('scroll',function(){if(tick)return;tick=true;requestAnimationFrame(function(){if(atBottom()&&heads.length){setA(map[heads[heads.length-1].id]);tick=false;return;}var best=null,bd=Infinity;heads.forEach(function(h){var t=h.getBoundingClientRect().top;if(t<=140){var dd=140-t;if(dd<bd){bd=dd;best=h;}}});if(!best&&heads.length)best=heads[0];if(best)setA(map[best.id]);tick=false;});},{passive:true});
+}
+})();
+</script>
+</body>
+</html>
