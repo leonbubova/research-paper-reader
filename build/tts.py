@@ -6,7 +6,7 @@ Voices come from build/voices.json {key: voiceSlugOrId} (or TTS_VOICE/TTS_VOICE_
 Usage: python build/tts.py [--voice KEY]... [--force] [lectureId ...]
 Env: MISTRAL_API_KEY
 """
-import os, re, sys, json, base64, hashlib, subprocess, tempfile, urllib.request
+import os, re, sys, json, base64, hashlib, subprocess, tempfile, urllib.request, time
 
 API="https://api.mistral.ai/v1/audio/speech"; MODEL="voxtral-mini-tts-2603"
 KEY=os.environ.get("MISTRAL_API_KEY")
@@ -44,11 +44,30 @@ def chunks(text):
         if buf: parts.append(' '.join(buf).strip()); buf=[]; n=0
     return [p for p in parts if p]
 
+_win=[]  # (ts, chars) rolling 60s window; account limit is 24000 chars/min
+LIMIT=21000
+def _throttle(chars):
+    while True:
+        now=time.time()
+        while _win and _win[0][0]<now-60: _win.pop(0)
+        if not _win or sum(c for _,c in _win)+chars<=LIMIT: break
+        time.sleep(1.0)
+    _win.append((time.time(),chars))
 def synth(text, voice):
+    _throttle(len(text))
     body=json.dumps({"model":MODEL,"input":text,"voice":voice,"response_format":"mp3"}).encode()
-    req=urllib.request.Request(API,data=body,method="POST",
-        headers={"Authorization":"Bearer "+KEY,"Content-Type":"application/json"})
-    return base64.b64decode(json.load(urllib.request.urlopen(req,timeout=180))["audio_data"])
+    for attempt in range(7):
+        req=urllib.request.Request(API,data=body,method="POST",
+            headers={"Authorization":"Bearer "+KEY,"Content-Type":"application/json"})
+        try:
+            with urllib.request.urlopen(req,timeout=180) as r:
+                return base64.b64decode(json.load(r)["audio_data"])
+        except urllib.error.HTTPError as e:
+            if e.code in (429,403,500,502,503):
+                ra=e.headers.get("Retry-After")
+                time.sleep(float(ra) if ra else min(30, 2**attempt)); continue
+            raise
+    raise RuntimeError("synth failed after retries")
 
 def build(key, voice, id, force):
     src=os.path.join(MD,f"lecture-{id}.md")
