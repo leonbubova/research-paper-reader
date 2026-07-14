@@ -235,6 +235,14 @@ img.zoom{cursor:zoom-in}
   border-radius:4px; box-decoration-break:clone; -webkit-box-decoration-break:clone; padding:.03em .12em}
 @media (max-width:640px){ #tts{left:1rem; bottom:1rem} }
 
+#tts .seek{accent-color:var(--accent); width:7rem; height:4px; cursor:pointer; flex:0 1 7rem}
+#tts .t-cur,#tts .t-dur{font-size:.72rem; color:var(--fg-faint); font-variant-numeric:tabular-nums; min-width:2.3rem; text-align:center}
+/* TOC listen state */
+.toc .toclink.playing .tt{color:var(--accent); font-weight:650}
+.toc .toclink.heard .tt{color:var(--fg-dim)}
+.toc .toclink.heard .tt::after{content:" \2713"; color:var(--accent-2); font-size:.82em}
+@media (max-width:640px){ #tts{max-width:calc(100vw - 1.4rem)} #tts .seek{width:4.5rem; flex:0 1 4.5rem} }
+
 /* ---- read tracking ---- */
 .readrow{margin-top:1.4rem}
 .readbtn{font-family:var(--sans); font-size:.82rem; font-weight:600; background:var(--bg-raise); border:1px solid var(--line); color:var(--fg-dim); cursor:pointer; padding:.4rem .95rem; border-radius:99px; display:inline-flex; align-items:center; gap:.35rem}
