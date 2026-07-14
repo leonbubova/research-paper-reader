@@ -241,7 +241,15 @@ img.zoom{cursor:zoom-in}
 .toc .toclink.playing .tt{color:var(--accent); font-weight:650}
 .toc .toclink.heard .tt{color:var(--fg-dim)}
 .toc .toclink.heard .tt::after{content:" \2713"; color:var(--accent-2); font-size:.82em}
-@media (max-width:640px){ #tts{max-width:calc(100vw - 1.4rem)} #tts .seek{width:4.5rem; flex:0 1 4.5rem} }
+@media (max-width:640px){
+  #tts{left:0; right:0; bottom:0; max-width:none; width:100%; border-radius:0; border-left:0; border-right:0; border-bottom:0; padding:.6rem .8rem calc(.6rem + env(safe-area-inset-bottom)); gap:.5rem; box-shadow:0 -6px 22px rgba(0,0,0,.3)}
+  #tts .seek{flex:1 1 auto; width:auto}
+  #tts .lbl{flex:1 1 auto}
+  #tts .vbtn{margin-left:auto}
+  #tts .t-dur{min-width:auto}
+  #resume{bottom:4.6rem}
+  main{padding-bottom:5rem}
+}
 
 /* ---- read tracking ---- */
 .readrow{margin-top:1.4rem}
