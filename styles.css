@@ -229,6 +229,7 @@ img.zoom{cursor:zoom-in}
 #tts button:hover{color:var(--fg); background:var(--line-soft)}
 #tts .lbl{font-size:.82rem; color:var(--fg-dim); padding:0 .5rem}
 #tts .rate{font-variant-numeric:tabular-nums; min-width:2.1rem; color:var(--accent)}
+#tts .vbtn{color:var(--accent); font-weight:600}
 .mdbody .speaking{background:color-mix(in srgb, var(--accent) 18%, transparent);
   box-shadow:0 0 0 1px color-mix(in srgb, var(--accent) 30%, transparent);
   border-radius:4px; box-decoration-break:clone; -webkit-box-decoration-break:clone; padding:.03em .12em}

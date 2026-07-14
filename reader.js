@@ -420,64 +420,73 @@
     root.insertAdjacentHTML('beforeend', h);
   }
 
-  // ---------- read aloud (Web Speech API — free, no key, offline) ----------
+  // ---------- read aloud (prerendered Voxtral audio if present, else Web Speech) ----------
   function setupTTS(id){
-    var synth = window.speechSynthesis;
-    if(!synth || !window.SpeechSynthesisUtterance) return;
-    var mdbody = document.querySelector('.mdbody'); if(!mdbody) return;
-    var items = Array.prototype.slice.call(mdbody.querySelectorAll('h2, h3, p > .s, li'))
-      .filter(function(el){ return el.textContent.trim().length; });
-    if(!items.length) return;
+    var mdbody=document.querySelector('.mdbody'); if(!mdbody) return;
+    var VOICES=[{key:'paul',label:'Paul'},{key:'female',label:'Female'}];
+    var voice; try{voice=localStorage.getItem('rpr-voice');}catch(e){}
+    if(!VOICES.some(function(v){return v.key===voice;})) voice='paul';
 
-    var idx = 0, playing = false, rate = 1, voice = null;
-    function pickVoice(){ var vs = synth.getVoices()||[]; voice = vs.filter(function(v){return /^en(-|_|$)/i.test(v.lang);})[0] || vs[0] || null; }
-    pickVoice(); try{ synth.onvoiceschanged = pickVoice; }catch(e){}
-
-    var bar = document.createElement('div'); bar.id='tts';
-    var play = document.createElement('button'); play.type='button'; play.setAttribute('aria-label','Play'); play.innerHTML='▶';
-    var lbl  = document.createElement('span'); lbl.className='lbl'; lbl.textContent='Listen';
-    var rateb= document.createElement('button'); rateb.type='button'; rateb.className='rate'; rateb.setAttribute('aria-label','Speed'); rateb.textContent='1x'; rateb.style.display='none';
-    var stop = document.createElement('button'); stop.type='button'; stop.setAttribute('aria-label','Stop'); stop.innerHTML='■'; stop.style.display='none';
-    bar.appendChild(play); bar.appendChild(lbl); bar.appendChild(rateb); bar.appendChild(stop);
+    var bar=document.createElement('div'); bar.id='tts';
+    var play=document.createElement('button'); play.type='button'; play.setAttribute('aria-label','Play'); play.innerHTML='▶';
+    var lbl=document.createElement('span'); lbl.className='lbl'; lbl.textContent='Listen';
+    var vbtn=document.createElement('button'); vbtn.type='button'; vbtn.className='vbtn'; vbtn.setAttribute('aria-label','Switch voice');
+    var rateb=document.createElement('button'); rateb.type='button'; rateb.className='rate'; rateb.textContent='1x'; rateb.setAttribute('aria-label','Speed'); rateb.style.display='none';
+    var stop=document.createElement('button'); stop.type='button'; stop.innerHTML='■'; stop.setAttribute('aria-label','Stop'); stop.style.display='none';
+    bar.appendChild(play); bar.appendChild(lbl); bar.appendChild(vbtn); bar.appendChild(rateb); bar.appendChild(stop);
     document.body.appendChild(bar);
+    function vlabel(){ var v=VOICES.filter(function(x){return x.key===voice;})[0]; vbtn.textContent=v?v.label:voice; }
+    vlabel();
 
-    function hl(el){
-      mdbody.querySelectorAll('.speaking').forEach(function(e){ e.classList.remove('speaking'); });
-      if(el){ el.classList.add('speaking'); var r=el.getBoundingClientRect();
-        if(r.top<80 || r.bottom>window.innerHeight-80) scrollToEl(el,'center'); }
-    }
-    function speak(i){
-      if(i>=items.length){ setRead(id,true); var rb=document.querySelector('.readbtn'); if(rb){rb.textContent='✓ Read'; rb.classList.add('is-read');} finish(); return; }
-      idx=i; hl(items[i]);
-      var u=new SpeechSynthesisUtterance(items[i].textContent.replace(/\s+/g,' ').trim());
-      u.rate=rate; if(voice) u.voice=voice;
-      u.onend=function(){ if(playing) speak(idx+1); };
-      u.onerror=function(){ if(playing) speak(idx+1); };
-      synth.speak(u);
-    }
-    function start(){ synth.cancel(); playing=true; setUI(); speak(idx); }
-    function pause(){ playing=false; try{synth.pause();}catch(e){} setUI(); }
-    function resume(){ playing=true; try{synth.resume();}catch(e){} setUI(); }
-    function finish(){ playing=false; synth.cancel(); hl(null); idx=0; setUI(); }
-    function setUI(){
-      play.innerHTML = playing ? '❙❙' : '▶';
-      play.setAttribute('aria-label', playing?'Pause':'Play');
-      lbl.textContent = playing ? 'Reading' : ((idx>0) ? 'Paused' : 'Listen');
-      stop.style.display  = (playing||idx>0) ? '' : 'none';
-      rateb.style.display = (playing||idx>0) ? '' : 'none';
+    var rate=1, rates=[1,1.25,1.5,1.75,0.85];
+    var audio=new Audio(); audio.preload='metadata';
+    var mode=null, aPlaying=false;
+    function audioUrl(){ return 'md/audio/'+voice+'/lecture-'+id+'.mp3'; }
+    function loadAudio(){ mode=null; audio.src=audioUrl(); }
+    loadAudio();
+    audio.addEventListener('loadedmetadata', function(){ if(mode===null) mode='audio'; });
+    audio.addEventListener('error', function(){ if(mode===null) mode='speech'; });
+    audio.addEventListener('play', function(){aPlaying=true;aUI();});
+    audio.addEventListener('pause', function(){aPlaying=false;aUI();});
+    audio.addEventListener('ended', function(){aPlaying=false; markRead(); aUI();});
+    function aUI(){ play.innerHTML=aPlaying?'❙❙':'▶'; play.setAttribute('aria-label',aPlaying?'Pause':'Play'); lbl.textContent=aPlaying?'Playing':(audio.currentTime>0?'Paused':'Listen'); stop.style.display=(aPlaying||audio.currentTime>0)?'':'none'; rateb.style.display=(aPlaying||audio.currentTime>0)?'':'none'; }
+
+    function markRead(){ setRead(id,true); var rb=document.querySelector('.readbtn'); if(rb){rb.textContent='✓ Read'; rb.classList.add('is-read');} }
+
+    var synth=window.speechSynthesis, items=[], sidx=0, sPlaying=false, sVoice=null;
+    function pickVoice(){ if(!synth)return; var vs=synth.getVoices()||[]; sVoice=vs.filter(function(v){return /^en(-|_|$)/i.test(v.lang);})[0]||vs[0]||null; }
+    if(synth){ pickVoice(); try{synth.onvoiceschanged=pickVoice;}catch(e){} }
+    function buildItems(){ items=Array.prototype.slice.call(mdbody.querySelectorAll('h2, h3, p > .s, li')).filter(function(el){return el.textContent.trim().length;}); }
+    function hl(el){ mdbody.querySelectorAll('.speaking').forEach(function(e){e.classList.remove('speaking');}); if(el){el.classList.add('speaking'); var r=el.getBoundingClientRect(); if(r.top<80||r.bottom>window.innerHeight-80) scrollToEl(el,'center');} }
+    function sSpeak(i){ if(i>=items.length){ markRead(); sFinish(); return;} sidx=i; hl(items[i]); var u=new SpeechSynthesisUtterance(items[i].textContent.replace(/\s+/g,' ').trim()); u.rate=rate; if(sVoice)u.voice=sVoice; u.onend=function(){if(sPlaying)sSpeak(sidx+1);}; u.onerror=function(){if(sPlaying)sSpeak(sidx+1);}; synth.speak(u); }
+    function sStart(){ if(!items.length)buildItems(); synth.cancel(); sPlaying=true; sUI(); sSpeak(sidx); }
+    function sPause(){ sPlaying=false; try{synth.pause();}catch(e){} sUI(); }
+    function sResume(){ sPlaying=true; try{synth.resume();}catch(e){} sUI(); }
+    function sFinish(){ sPlaying=false; if(synth)synth.cancel(); hl(null); sidx=0; sUI(); }
+    function sUI(){ play.innerHTML=sPlaying?'❙❙':'▶'; play.setAttribute('aria-label',sPlaying?'Pause':'Play'); lbl.textContent=sPlaying?'Reading':(sidx>0?'Paused':'Listen'); stop.style.display=(sPlaying||sidx>0)?'':'none'; rateb.style.display=(sPlaying||sidx>0)?'':'none'; }
+
+    function resolveMode(cb){
+      if(mode){cb();return;}
+      var done=false;
+      var t=setTimeout(function(){ if(done)return; done=true; mode=(audio.readyState>=1)?'audio':'speech'; cb(); },700);
+      audio.addEventListener('loadedmetadata', function(){ if(done)return; done=true; clearTimeout(t); mode='audio'; cb(); },{once:true});
+      audio.addEventListener('error', function(){ if(done)return; done=true; clearTimeout(t); mode='speech'; cb(); },{once:true});
     }
     play.addEventListener('click', function(){
-      if(playing) pause();
-      else if(synth.paused && idx>0) resume();
-      else start();
+      resolveMode(function(){
+        if(mode==='audio'){ audio.playbackRate=rate; if(audio.paused)audio.play(); else audio.pause(); }
+        else { if(!synth){lbl.textContent='No audio';return;} if(sPlaying)sPause(); else if(synth.paused&&sidx>0)sResume(); else sStart(); }
+      });
     });
-    stop.addEventListener('click', finish);
-    rateb.addEventListener('click', function(){
-      var rates=[1,1.25,1.5,1.75,0.85]; rate=rates[(rates.indexOf(rate)+1)%rates.length]; rateb.textContent=rate+'x';
-      if(playing){ synth.cancel(); speak(idx); }
+    stop.addEventListener('click', function(){ if(mode==='audio'){audio.pause();audio.currentTime=0;aUI();} else sFinish(); });
+    rateb.addEventListener('click', function(){ rate=rates[(rates.indexOf(rate)+1)%rates.length]; rateb.textContent=rate+'x'; if(mode==='audio')audio.playbackRate=rate; else if(sPlaying){synth.cancel();sSpeak(sidx);} });
+    vbtn.addEventListener('click', function(){
+      audio.pause(); audio.currentTime=0; if(synth)synth.cancel(); sPlaying=false; sidx=0; hl(null);
+      var i=VOICES.map(function(x){return x.key;}).indexOf(voice); voice=VOICES[(i+1)%VOICES.length].key;
+      try{localStorage.setItem('rpr-voice',voice);}catch(e){}
+      vlabel(); loadAudio(); lbl.textContent='Listen'; rateb.style.display='none'; stop.style.display='none'; play.innerHTML='▶';
     });
-    window.addEventListener('beforeunload', function(){ synth.cancel(); });
-    setUI();
+    window.addEventListener('beforeunload', function(){ if(synth)synth.cancel(); audio.pause(); });
   }
 
   // ---------- bookmark / Lesezeichen — sentence granularity ----------
