@@ -56,10 +56,15 @@
 
   <div class="unit"><h2>Papers</h2><span class="rule"></span></div>
   <ul class="list">
-    <li class="item soon"><a class="row">
-      <span class="num">&middot;</span>
-      <span><span class="t">No individual papers yet</span><span class="d">Each researched paper drops in here as one Markdown doc, opened in the same reader. Add a file to <code>/md</code> and list it here.</span></span>
-      <span class="ready">empty</span>
+    <li class="item"><a class="row" href="lecture.html?d=skinner-1948">
+      <span class="num">01</span>
+      <span><span class="t">&lsquo;Superstition&rsquo; in the Pigeon</span><span class="d">B. F. Skinner, 1948. Food on a timer, unconnected to behaviour, and six of eight pigeons invent a ritual anyway. The famous experiment run inside the operant conditioning chamber.</span></span>
+      <span class="ready"></span>
+    </a></li>
+    <li class="item"><a class="row" href="lecture.html?d=hopson-2001">
+      <span class="num">02</span>
+      <span><span class="t">Behavioral Game Design</span><span class="d">John Hopson, 2001. Skinner&rsquo;s reinforcement schedules applied to reward pacing in games. The primary text behind the &ldquo;games are Skinner boxes&rdquo; argument, though it never claims that itself.</span></span>
+      <span class="ready"></span>
     </a></li>
   </ul>
 
@@ -101,6 +106,10 @@ var read;try{read=new Set(JSON.parse(localStorage.getItem('rpr-read')||'[]'));}c
 var done=ids.filter(function(i){return read.has(i);}).length;
 var card=document.querySelector('.item a.row[href="cs197.html"] .d');
 if(card){var s=document.createElement('span');s.className='cardprog';s.textContent=' \u00b7 '+done+'/'+ids.length+' read';card.appendChild(s);}
+document.querySelectorAll('.item a.row[href^="lecture.html?d="]').forEach(function(a){
+  var sl=a.getAttribute('href').split('d=')[1];
+  if(read.has(sl)){var b=a.querySelector('.ready');if(b)b.textContent='\u2713 read';}
+});
 })();
 </script>
 </body>

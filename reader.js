@@ -9,19 +9,24 @@
 
 (function(){
   var params = new URLSearchParams(location.search);
-  var id = (params.get('l') || '').replace(/[^0-9\-]/g,'');
+  var lid  = (params.get('l') || '').replace(/[^0-9\-]/g,'');
+  var slug = (params.get('d') || '').replace(/[^a-z0-9\-]/g,'');
+  // ?d=<slug> loads md/<slug>.md (papers); ?l=NN loads md/lecture-NN.md (CS197). id = storage key.
+  var id     = slug || lid;
+  var base   = slug ? slug : 'lecture-' + lid;
+  var mdPath = 'md/' + base + '.md';
   var root = document.getElementById('doc');
   if(!root) return;
-  if(!id){ root.innerHTML = '<p>No lecture specified. <a href="index.html">Back to the index</a>.</p>'; return; }
+  if(!id){ root.innerHTML = '<p>No document specified. <a href="index.html">Back to the library</a>.</p>'; return; }
 
-  fetch('md/lecture-' + id + '.md')
+  fetch(mdPath)
     .then(function(r){ if(!r.ok) throw new Error('HTTP '+r.status); return r.text(); })
     .then(function(md){ render(md, id); })
     .catch(function(e){
-      root.innerHTML = '<p>Could not load <code>md/lecture-'+id+'.md</code> ('+e.message+').<br>'+
+      root.innerHTML = '<p>Could not load <code>'+mdPath+'</code> ('+e.message+').<br>'+
         'If you opened this file directly from disk, browsers block loading local files. '+
         'Run a small server instead:</p><pre><code>cd cs197-reader\npython3 -m http.server</code></pre>'+
-        '<p>then open <code>http://localhost:8000/lecture.html?l='+id+'</code>.</p>';
+        '<p>then open <code>http://localhost:8000/lecture.html?'+(slug?'d='+slug:'l='+lid)+'</code>.</p>';
     });
 
   // ---------- front-matter (small YAML subset) ----------
@@ -98,27 +103,36 @@
     var html = marked.parse(body);
     html = html.replace(/<p>@@BLK(\d+)@@<\/p>/g, function(_, n){ return blockHTML(blocks[+n]); });
 
-    document.title = 'Lecture ' + (fm.lecture||id) + ' · ' + (fm.title||'') + ' · Research Paper Reader';
+    var isPaper = !!slug;
+    document.title = (isPaper ? (fm.title||id) : 'Lecture ' + (fm.lecture||id) + ' · ' + (fm.title||'')) + ' · Research Paper Reader';
     var crumb = document.querySelector('.topbar .crumb');
-    if(crumb) crumb.innerHTML = '<a href="cs197.html" style="color:inherit;text-decoration:none">CS197</a> \u00b7 Lecture ' + esc(fm.lecture||id) + (fm.title? ' \u00b7 '+esc(fm.title) : '');
+    if(crumb){
+      crumb.innerHTML = isPaper
+        ? '<a href="index.html" style="color:inherit;text-decoration:none">Papers</a> \u00b7 ' + esc(fm.authors||'') + (fm.year? ' ' + esc(fm.year) : '')
+        : '<a href="cs197.html" style="color:inherit;text-decoration:none">CS197</a> \u00b7 Lecture ' + esc(fm.lecture||id) + (fm.title? ' \u00b7 '+esc(fm.title) : '');
+    }
     var srcA = document.getElementById('srclink');
     if(srcA && fm.source_notes) srcA.href = fm.source_notes;
 
     // header
     var h = '';
-    h += '<p class="kicker">'+ esc(fm.course||'CS197 Harvard') + (fm.term? ' · '+esc(fm.term):'') +
-         ' · Lecture ' + esc(fm.lecture||id) +'</p>';
+    h += '<p class="kicker">'+ (isPaper
+          ? esc(fm.collection||'Paper') + (fm.year? ' · '+esc(fm.year):'')
+          : esc(fm.course||'CS197 Harvard') + (fm.term? ' · '+esc(fm.term):'') + ' · Lecture ' + esc(fm.lecture||id)) +'</p>';
     h += '<h1>'+ esc(fm.title||('Lecture '+id)) +'</h1>';
     if(fm.subtitle) h += '<p class="subtitle">'+ esc(fm.subtitle) +'</p>';
     var meta = [];
-    if(fm.instructor) meta.push('Notes by '+esc(fm.instructor));
-    if(fm.source_notes) meta.push('<a href="'+esc(fm.source_notes)+'" target="_blank" rel="noopener">original ↗</a>');
-    meta.push('<a href="md/lecture-'+id+'.md" target="_blank" rel="noopener">raw .md ↗</a>');
+    if(isPaper){
+      if(fm.authors) meta.push(esc(fm.authors));
+      if(fm.published) meta.push(esc(fm.published));
+    } else if(fm.instructor) meta.push('Notes by '+esc(fm.instructor));
+    if(fm.source_notes) meta.push('<a href="'+esc(fm.source_notes)+'" target="_blank" rel="noopener">'+esc(fm.source_label||'original')+' ↗</a>');
+    meta.push('<a href="'+mdPath+'" target="_blank" rel="noopener">raw .md ↗</a>');
     h += '<p class="meta">'+ meta.join(' · ') +'</p>';
 
     // provenance legend
     var legend = '<div class="legend" role="note">'+
-      '<span><span class="sw orig"></span> Original lecture notes by '+ esc(fm.instructor||'the author') +'</span>'+
+      '<span><span class="sw orig"></span> '+ (isPaper ? 'Original text by '+esc(fm.authors||'the author')+', transcribed verbatim' : 'Original lecture notes by '+esc(fm.instructor||'the author')) +'</span>'+
       '<span><span class="sw add"></span> <span class="added-ico" aria-hidden="true">✎</span> Explanation added for this reader</span>'+
       '</div>';
 
@@ -336,7 +350,9 @@
 
     var toc = document.createElement('nav');
     toc.className = 'toc'; toc.setAttribute('aria-label','On this page');
-    var meta = '<div class="toc-meta"><strong>Lecture '+esc(id.replace(/^0/,''))+'</strong> of 21'+
+    var meta = '<div class="toc-meta">'+ (slug
+        ? '<strong>Paper '+(PORDER.indexOf(slug)+1)+'</strong> of '+PORDER.length
+        : '<strong>Lecture '+esc(id.replace(/^0/,''))+'</strong> of 21')+
       '<br>'+words.toLocaleString()+' words · ~'+mins+' min · ~'+pages+' pp.</div>';
     function sectionWords(h){
       var n = 0, el = h.nextElementSibling;
@@ -408,8 +424,21 @@
 
   var LORDER = ["01","02","03","04","05","06-07","08-09","10-11","12-13","14-15","16-17","18","19","20","21"];
   var LTITLES = {"01":"You Complete My Sandwiches","02":"The Zen of Python","03":"Shoulders of Giants","04":"In-Tune with Jazz Hands","05":"Lightning McTorch","06-07":"Moonwalking with PyTorch","08-09":"Experiment Organization Sparks Joy","10-11":"I Dreamed a Dream","12-13":"Today Was a Fairytale","14-15":"Deep Learning on Cloud Nine","16-17":"Make Your Dreams Come Tuned","18":"Research Productivity Power-Ups","19":"The AI Ninja","20":"Bejeweled","21":"Model Showdown"};
+  var PORDER = ["skinner-1948","hopson-2001"];
+  var PTITLES = {"skinner-1948":"'Superstition' in the Pigeon","hopson-2001":"Behavioral Game Design"};
   function buildPager(id){
     var root=document.getElementById('doc'); if(!root) return;
+    if(slug){
+      var pi=PORDER.indexOf(slug);
+      var pp=pi>0?PORDER[pi-1]:null, pn=(pi>=0&&pi<PORDER.length-1)?PORDER[pi+1]:null;
+      var ph='<nav class="pager" aria-label="Paper navigation">';
+      ph+= pp? '<a class="prev" href="lecture.html?d='+pp+'"><span class="lab">Previous</span>'+esc(PTITLES[pp]||pp)+'</a>' : '<span class="pg-spacer"></span>';
+      ph+= '<a class="overview" href="index.html"><span class="lab">Overview</span>All papers</a>';
+      ph+= pn? '<a class="next" href="lecture.html?d='+pn+'"><span class="lab">Next</span>'+esc(PTITLES[pn]||pn)+'</a>' : '<span class="pg-spacer"></span>';
+      ph+='</nav>';
+      root.insertAdjacentHTML('beforeend', ph);
+      return;
+    }
     var i=LORDER.indexOf(id);
     var prev=i>0?LORDER[i-1]:null, next=(i>=0&&i<LORDER.length-1)?LORDER[i+1]:null;
     var h='<nav class="pager" aria-label="Lecture navigation">';
@@ -454,8 +483,8 @@
     var mode=null, aPlaying=false, chapters=[], heard, lastSaved=-1;
     function POS(){return 'rpr-pos-'+voice+'-'+id;}
     function HEARD(){return 'rpr-heard-'+voice+'-'+id;}
-    function audioUrl(){return 'md/audio/'+voice+'/lecture-'+id+'.mp3';}
-    function loadChapters(){ chapters=[]; fetch('md/audio/'+voice+'/lecture-'+id+'.json').then(function(r){return r.ok?r.json():null;}).then(function(d){ if(d&&d.chapters) chapters=d.chapters; }).catch(function(){}); }
+    function audioUrl(){return 'md/audio/'+voice+'/'+base+'.mp3';}
+    function loadChapters(){ chapters=[]; fetch('md/audio/'+voice+'/'+base+'.json').then(function(r){return r.ok?r.json():null;}).then(function(d){ if(d&&d.chapters) chapters=d.chapters; }).catch(function(){}); }
     function markRead(){ setRead(id,true); var rb=document.querySelector('.readbtn'); if(rb){rb.textContent='✓ Read'; rb.classList.add('is-read');} }
     function applyHeard(){ heard=loadSet(HEARD()); document.querySelectorAll('.toc .toclink.heard').forEach(function(e){e.classList.remove('heard');}); heard.forEach(function(hid){ var a=tocLink(hid); if(a) a.classList.add('heard'); }); }
     function loadAudio(){ mode=null; audio.src=audioUrl(); loadChapters(); applyHeard(); }
