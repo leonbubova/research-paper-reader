@@ -23,7 +23,7 @@ Leon wanted to build a learning tool for the command line. Tools like the shell,
 
 Claude's answer made the flaw obvious: typing text you can see is copying, not learning. So the second prompt changes the goal. Instead of typing commands from a sheet, the environment should actually be broken and the only way through is to run the real commands until they stick. That is the moment the project stops being a typing drill and becomes **kaputt**, a CLI wargame in the spirit of OverTheWire's Bandit: a level breaks something, you fix it, `wg check` confirms it, you move on.
 
-From there the night escalates on its own: one k8s track becomes eighteen tracks, a test harness, a public repo, a landing page, GitHub issues, a browser playground and a per-visitor sandbox. The later sessions two weeks on are about finding the project again, adding a Kotlin track, and realising the levels still assume too much.
+From there the night escalates on its own: one k8s track becomes eighteen tracks, a test harness, a public repo, a landing page, GitHub issues, a browser playground and a per-visitor sandbox. The later sessions two weeks on are about finding the project again, adding a Kotlin track, realising the levels still assume too much, and then adding beginner lessons to every track.
 :::
 
 ::: added How to read this
@@ -1891,7 +1891,7 @@ Heads-up:
 :::
 
 
-## Session 4 — 2026-09-15/16 · kotlin track (parallel session)
+## Session 4 — 2026-09-15/16 · kotlin track, then lessons for every track
 
 ::: prompt 14:01
 can you add a track for kotlin?
@@ -2058,4 +2058,78 @@ pentest done, unverified because the sandbox blocks `listen()` on any port (7 le
 nextjs done, unverified for the same listen() reason but build-checked (8 lessons, now 36). 2 running: nestjs, trigger.
 
 trigger done, 23 of 31 levels verified; 8 blocked by the same listen() restriction (7 lessons, now 31). 1 running: nestjs.
+:::
+
+::: prompt 09:18
+i blocked an rm rf, do it in a safer way, also whats the status?
+:::
+
+::: reply Bash×2, ToolSearch×1, SendMessage×1
+Told the nestjs agent to use targeted deletes only, not `rm -rf`.
+
+Status: 17 of 18 tracks done, nestjs still running.
+
+| verified (harness green) | bash, git, kotlin, tls 01–07, trigger 23/31 |
+|---|---|
+| unverified, docker down | docker, k8s, helm, linux, networking, nginx, postgres, redis, supabase, terraform, systemd (remote host) |
+| unverified, sandbox blocks `listen()` | nextjs, pentest, trigger (8 levels), nestjs |
+
+Every unverified track passed `bash -n` and a fail-before/pass-after reasoning check. Nothing committed yet.
+
+Next once nestjs finishes: update README counts, rebuild site, run a cross-track sanity pass (numbering, solutions.sh), commit + push. Then you run with colima up:
+
+```
+for t in docker k8s helm linux networking nginx postgres redis supabase terraform nextjs pentest trigger nestjs; do WG_TRACK=$t bin/wg start && test/run-all.sh $t; done
+```
+
+All 18 done. Now a cross-track sanity pass (numbering, solutions.sh functions, stray files), README counts, site rebuild, then commit and push.
+
+Pushed: `4911668` on master. All 20 tracks now start with beginner lessons, 572 levels total.
+
+- Consistency pass clean: contiguous numbering, one solution function per level, all 5 files + 3 hints everywhere
+- `README.md` counts + intro, `docs/track-spec.md` (lesson block rule, k8s reference), site regenerated
+
+Verification state:
+- **green here**: bash, git, kotlin, nestjs (socket shim), tls 01–07, trigger 23/31
+- **unverified**: docker, k8s, helm, linux, networking, nginx, postgres, redis, supabase, terraform (docker down), systemd (remote host), nextjs, pentest, trigger 8 levels (sandbox blocks ports)
+
+Two side changes worth knowing: networking's box image got `nano` (needs `wg stop && wg start` to rebuild), and redis lessons teach RPUSH/LPOP instead of LPUSH/RPOP because a later ticket needs that order.
+
+Open: run this with colima up and send me any red lines:
+
+```
+cd ~/vault/wargames/kaputt
+for t in docker k8s helm linux networking nginx postgres redis supabase terraform nextjs pentest trigger nestjs; do WG_TRACK=$t bin/wg start && test/run-all.sh $t | tail -1; done
+```
+:::
+
+::: prompt 09:38
+sandbox off
+:::
+
+::: reply Bash×1
+Sandbox is off, so I can verify the port-blocked tracks now and try bringing colima up for the docker ones. Running nextjs, pentest, trigger, nestjs harnesses first.
+
+Running in the background (~10 min). I'll report per track when it finishes.
+:::
+
+::: prompt 09:38
+summary of what you built/added?
+:::
+
+::: reply 
+Three commits on `master` this session:
+
+**1. Kotlin track** (new, `levels/kotlin/`)
+- Env: plain `kotlinc` + coroutines jar auto-downloaded to `~/.k8s-wargame/kotlin`, no Gradle. Play area = small inventory/orders project, `./run.sh` compiles + runs a demo.
+- Judge: each level's hidden `check.kt` compiled with the player's `src/`; compile error = not yet.
+- 30 levels: 8 lessons from zero → 8 build-it (data class, extension fn, defaults, nullable, sealed, collections, suspend, async) → 14 incidents (`!!`, lost `data`, discarded `copy()`, `$p.name`, `else` over sealed, int division, `lateinit`, live view, `first()`, `apply` vs `let`, sequential await, cancelled scope, 2 chained).
+- Wired: README, ARCHITECTURE, site, CI job, playground image + preload.
+
+**2. Beginner lessons for the other 18 tracks** (`+134 levels`, 438 → 572)
+- 6–8 lesson levels prepended per track in the shell-track style: what the tool is, commands shown literally, "Try it", "Your task". Existing levels renumbered, `solutions.sh` shifted, PRIMERs get a "never used X? skip this list" line.
+- Spec updated (`docs/track-spec.md`: lesson block is now a rule), README counts + intro, site regenerated.
+
+**Verified green**: kotlin, bash, git, nestjs (via shim), tls 01–07, trigger 23/31.
+**Unverified**: 10 docker/k3d tracks, systemd, nextjs, pentest, 8 trigger levels. Harness for the node tracks is running now in the background; colima is starting for the rest.
 :::
