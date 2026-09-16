@@ -19,7 +19,7 @@ provenance: Prompts and Claude Code's replies are reproduced verbatim from the s
 ::: added Where this starts
 The transcript begins mid-thought, so here is the missing context.
 
-Leon wanted to learn infrastructure tools (Kubernetes, Docker, Linux, git and so on) and the idea was to learn them by **typing**. The first attempt, before this transcript, was a set of custom text corpora for [monkeytype](https://monkeytype.com): chapters of real `kubectl` commands to type through, the way you would practise a language by copying sentences. The very first prompt below asks for a better version of that.
+Leon wanted to build a learning tool for the command line. Tools like the shell, git, Docker or Kubernetes are learned by typing commands, and tutorials that you read do not stick: the knowledge only stays when your fingers have run the command against something real, ideally many times. The first attempt, before this transcript, was a set of custom text corpora for [monkeytype](https://monkeytype.com), the typing trainer: chapters of real commands (`ls`, `cd`, `grep`, later `kubectl`) to type through, the way you would practise a language by copying sentences. The very first prompt below asks for a better version of that.
 
 Claude's answer made the flaw obvious: typing text you can see is copying, not learning. So the second prompt changes the goal. Instead of typing commands from a sheet, the environment should actually be broken and the only way through is to run the real commands until they stick. That is the moment the project stops being a typing drill and becomes **kaputt**, a CLI wargame in the spirit of OverTheWire's Bandit: a level breaks something, you fix it, `wg check` confirms it, you move on.
 
