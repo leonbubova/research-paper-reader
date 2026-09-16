@@ -808,5 +808,5 @@ list is enough, where is it?
 ::: reply 
 `notes/TODO.md` in the repo (committed and pushed to `main`).
 
-Full path: `/Users/leon/vault/my-little-agentur-wurm/[client]-website/notes/TODO.md`
+Full path: `/Users/leon/vault/[client-project]/client-website/notes/TODO.md`
 :::

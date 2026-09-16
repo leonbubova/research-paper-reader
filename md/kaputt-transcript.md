@@ -152,7 +152,7 @@ wg check               # level 1 is already loaded and broken
 Same repo runs on your Mac (`k8s-wargame/install.sh`, cluster already up there too).
 
 **What's where**
-- `UP003-ai-backend/k8s-wargame/` → `wg` CLI, 18 levels, `install.sh`, `test/run-all.sh`, git repo (2 commits)
+- `[client-project]/k8s-wargame/` → `wg` CLI, 18 levels, `install.sh`, `test/run-all.sh`, git repo (2 commits)
 - [server] → `~/k8s-wargame`, k3d cluster `wargame` (3 nodes), Docker/k3d/kubectl/helm installed
 - `monkeytype/v2/` → typing drills, finished earlier
 
@@ -1496,7 +1496,7 @@ PR ready: https://github.com/leonbubova/kaputt/pull/36 (branch `teach-first`, cl
 
 Play it:
 ```
-cd ~/vault/my-little-agentur-wurm/upside/UP003-ai-backend/k8s-wargame && git checkout teach-first
+cd ~/[client-project]/k8s-wargame && git checkout teach-first
 bin/wg track bash && bin/wg start && bin/wg level 1
 ```
 
@@ -1720,7 +1720,7 @@ Done. PR #36 updated and pushed: https://github.com/leonbubova/kaputt/pull/36
 
 Play it:
 ```
-cd ~/vault/my-little-agentur-wurm/upside/UP003-ai-backend/k8s-wargame && git checkout teach-first
+cd ~/[client-project]/k8s-wargame && git checkout teach-first
 bin/wg track bash && bin/wg start && bin/wg level 1
 ```
 
@@ -1775,8 +1775,8 @@ Searching for "kaputt" in vault and nearby dirs.
 
 Found it. Two checkouts of the same repo (`github.com/leonbubova/kaputt`):
 
-- `vault/my-little-agentur-wurm/upside/UP003-ai-backend/k8s-wargame/` → main game (bin, levels, site, playground; last commit: helm ramp levels, 19 tracks / 408 levels)
-- `.../UP003-ai-backend/wargame-site/` → landing page checkout (older: 18 tracks / 294 levels)
+- `~/[client-project]/k8s-wargame/` → main game (bin, levels, site, playground; last commit: helm ramp levels, 19 tracks / 408 levels)
+- `.../[client-project]/wargame-site/` → landing page checkout (older: 18 tracks / 294 levels)
 
 Site: https://leonbubova.github.io/kaputt/ · launch notes in `k8s-wargame/docs/launch/show-hn.md` (rename to kata.sh planned).
 :::
