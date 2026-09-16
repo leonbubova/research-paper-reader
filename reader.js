@@ -103,10 +103,10 @@
       var gist = b.md.split('\n')[0].replace(/\s+/g,' ').trim();
       if(gist.length > 64) gist = gist.slice(0,64).replace(/\s+\S*$/,'') + '\u2026';
       return '<section class="prompt"><h3 class="sr">'+ esc(b.ts) +' \u00b7 '+ esc(gist) +'</h3>'+
-        '<p class="prompt-h"><span class="who">Leon</span><span class="ts">'+ esc(b.ts) +'</span></p>'+ marked.parse(b.md) +'</section>';
+        '<p class="prompt-h"><span class="who">leon</span><span class="ts">'+ esc(b.ts) +'</span></p>'+ marked.parse(b.md) +'</section>';
     }
     if(b.type==='reply'){
-      return '<div class="reply"><p class="reply-h"><span class="who">Claude Code</span>'+
+      return '<div class="reply"><p class="reply-h"><span class="who">claude code</span>'+
         (b.tools ? '<span class="tools">'+ esc(b.tools) +'</span>' : '') +'</p>'+ marked.parse(b.md) +'</div>';
     }
     if(b.type==='added'){
