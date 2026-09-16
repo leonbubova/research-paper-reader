@@ -166,6 +166,8 @@ h2:hover .anchor, h3:hover .anchor, .anchor:focus-visible{opacity:1}
   border:1px dashed color-mix(in srgb, var(--accent) 45%, var(--line)); border-radius:12px}
 .added .added-h{font-family:var(--sans); font-size:.72rem; letter-spacing:.13em; text-transform:uppercase; color:var(--accent); font-weight:700; margin:0 0 .55rem; display:flex; align-items:center; gap:.4rem}
 .added p{margin:0 0 .7rem; font-size:.96rem; color:var(--fg-dim)}
+.added ul,.added ol{margin:.3rem 0 .7rem; padding-left:1.2rem; font-size:.96rem}
+.added li{color:var(--fg-dim); margin:0 0 .35rem}
 .added > :last-child{margin-bottom:0}
 .added a{color:var(--accent)}
 
