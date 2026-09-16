@@ -13,7 +13,7 @@ learning_outcomes:
   - See how a project goes from one vague prompt to a shipped repo, site, CI and issue tracker in one night, and what the human actually typed.
   - Notice the prompt patterns that work: short corrections, "status?", pasting a screenshot instead of describing it, asking "convince me" before accepting a proposal.
   - Watch a real failure (subagent overspawn crashing the laptop) and how the recovery was handled.
-provenance: Prompts and Claude Code's replies are reproduced verbatim from the session logs, typos included. Tool calls, tool output and subagent reports are omitted; only the per-turn tool counts are shown. Repeated one-line progress updates are collapsed.
+provenance: Prompts and Claude Code's replies are reproduced verbatim from the session logs, typos included. Screenshots Leon pasted are embedded. Tool calls, tool output and subagent reports are omitted; only per-turn tool counts are shown. Repeated one-line progress updates are collapsed.
 ---
 
 ::: added Where this starts
@@ -27,7 +27,7 @@ From there the night escalates on its own: one k8s track becomes eighteen tracks
 :::
 
 ::: added How to read this
-Each `### HH:MM` section is one turn. **Leon** is what was typed into Claude Code, exactly as typed. **Claude Code** is every text message the main agent wrote back during that turn, in order, before the next prompt. `[screenshot]` marks an image pasted into the chat. Headings inside replies were demoted so the table of contents only lists turns.
+Each `### HH:MM` section is one turn. **Leon** is what was typed into Claude Code, exactly as typed. **Claude Code** is every text message the main agent wrote back during that turn, in order, before the next prompt. Screenshots pasted into the chat are embedded, collapsed, right under the prompt they came with. Headings inside replies were demoted so the table of contents only lists turns.
 
 The project is **kaputt**, a break/fix terminal wargame: each level spins up a real environment (k3d cluster, container, repo), sabotages one thing, hands you a ticket, and `wg check` verifies you fixed it. Repo: [github.com/leonbubova/kaputt](https://github.com/leonbubova/kaputt). Site: [leonbubova.github.io/kaputt](https://leonbubova.github.io/kaputt/).
 
@@ -35,7 +35,7 @@ Things worth watching for:
 
 - **Prompt length is tiny compared to output.** Most prompts are one line. The long ones are dumps of several thoughts at once, and Claude splits them itself.
 - **Corrections are blunt and short.** "i feel like you didnt change the design at all?" or "revert it and do all" is enough.
-- **Screenshots replace descriptions.** Design feedback happens by pasting a picture, not by explaining pixels.
+- **Claude checks its own work visually.** During the landing-page redesign it screenshots shush.love and its own page with a headless browser and compares them. Those screenshots are embedded below the replies.
 - **"status?" is a real command.** Long agent runs are polled, not babysat.
 - **Pushback is asked for.** "convince me that that is really needed" gets a proposal dropped.
 - **The one big failure** is in Session 1 at 00:05: ~18 subagents ran Docker tests at once on an 8 GB laptop.
@@ -43,14 +43,11 @@ Things worth watching for:
 
 ## Session 1 — 2026-09-01/02 · from a typing drill to 18 tracks, a landing page and 33 GitHub issues
 
-### 22:18 · gib mir ein gutes interaktives kubernetes lern kapitel für m…
-
-**Leon:**
-
+::: prompt 22:18
 gib mir ein gutes interaktives kubernetes lern kapitel für monkeytype
+:::
 
-**Claude Code** · tools: Bash×6, WebSearch×3, WebFetch×2, ToolSearch×1
-
+::: reply Bash×6, WebSearch×3, WebFetch×2, ToolSearch×1
 Orientation first, then I'll look at the project to see what a "chapter" means here.
 
 Noted. Pausing the chapter-writing; researching first how typing drills actually turn into retention, and which monkeytype features support that.
@@ -74,29 +71,21 @@ Monkeytype settings: custom text → delimiter **pipe**, random on, ~40 words fo
 Open: same treatment for the Linux/Helm chapters?
 
 Sources: [Nature Reviews Psychology – spacing & retrieval](https://www.nature.com/articles/s44159-022-00089-1), [Evidence Based Education – combine retrieval + spacing](https://evidencebased.education/resource/retrieval-and-spaced-practice-study-strategies-that-must-be-combined/), [monkeytype funbox list](https://raw.githubusercontent.com/monkeytypegame/monkeytype/master/packages/funbox/src/list.ts), [pipe delimiter issue](https://github.com/Miodec/monkeytype/issues/1728)
+:::
 
----
-
-### 22:22 · so its more like a quiz then? i like the setting up and debu…
-
-**Leon:**
-
+::: prompt 22:22
 so its more like a quiz then? i like the setting up and debugging a system approach, cant we build an interactive k3s setup in a vm or container or something? that could work in my own terminal or on [server] or something, like a ctf or wargame you understand me?
+:::
 
-**Claude Code** · tools: Bash×5, AskUserQuestion×1
-
+::: reply Bash×5, AskUserQuestion×1
 SSH is blocked by the sandbox, so I can't probe [server] myself. I'll build the repo locally, test it with k3d on your Mac if Docker runs, and give you a one-line install for [server].
+:::
 
----
-
-### 22:25 · sandbox off
-
-**Leon:**
-
+::: prompt 22:25
 sandbox off
+:::
 
-**Claude Code** · tools: Bash×14, ToolSearch×1, TaskOutput×1
-
+::: reply Bash×14, ToolSearch×1, TaskOutput×1
 Local k3d ready; [server] is a clean Ubuntu 24.04 with sudo, no Docker yet. Building the repo now.
 
 Now the installer, README, and a self-test harness; then I'll boot the cluster locally and run every level through break → solve → check.
@@ -104,17 +93,13 @@ Now the installer, README, and a self-test harness; then I'll boot the cluster l
 Checks pass; the bug is in the CLI's scoring line (bash 3.2 on macOS chokes on the combined `local` assignment). Fixing and rerunning.
 
 The `…` right after `$l` gets parsed as part of the variable name by bash 3.2. Fixing.
+:::
 
----
-
-### 23:04 · why so long for a programmatic termincal cli program testing…
-
-**Leon:**
-
+::: prompt 23:04
 why so long for a programmatic termincal cli program testing? that should be instant no?
+:::
 
-**Claude Code**
-
+::: reply 
 Not instant, because the test isn't testing the CLI, it's testing the levels against a real cluster. Per level:
 
 - `wg level N` → delete namespace + wait for it to vanish (~5–10 s), pull/start pods
@@ -129,17 +114,13 @@ Options:
 3. Skip the pre-fix check in the harness entirely, only verify the solution path.
 
 I'd do 2. Your call.
+:::
 
----
-
-### 23:04 · hello?
-
-**Leon:**
-
+::: prompt 23:04
 hello?
+:::
 
-**Claude Code** · tools: Bash×19, Monitor×1, TaskOutput×1, Write×1
-
+::: reply Bash×19, Monitor×1, TaskOutput×1, Write×1
 Going with option 2. Checking the background run first, then shortening the waits.
 
 Still running with output buffered by `tail`. Killing it, adding fast mode, rerunning with live progress.
@@ -178,17 +159,13 @@ Same repo runs on your Mac (`k8s-wargame/install.sh`, cluster already up there t
 **Verification**: every level tested break → check-fails → solution → check-passes on a real cluster. Fixed along the way: 2 macOS-bash bugs in the CLI, kubectl image gone from Docker Hub, 3 checks that raced the cluster, 2 levels that didn't break hard enough.
 
 Open: the earlier 7 min per `wg check` you saw was the test harness, not the game. A single `wg check` takes 5–30 s.
+:::
 
----
-
-### 23:41 · ok lets do the same for linux and helm then, then for supaba…
-
-**Leon:**
-
+::: prompt 23:41
 ok lets do the same for linux and helm then, then for supabase as well, move this to separate subagents so this chat stays responsive, why do i have to do newgrp docker, didnt you check with that? why do you do it? why is it even necessary, ah do one for docker and docker compose as well, and then explain everything you did to set this up, like every step in detail so i understand what you built and what the architecture is
+:::
 
-**Claude Code** · tools: Agent×8, Bash×4
-
+::: reply Agent×8, Bash×4
 Doing this in order: first the `newgrp` answer, then I restructure `wg` into tracks (k8s / linux / docker / helm / supabase), spawn one background agent per new track, and write the architecture explanation while they build.
 
 **newgrp docker:** not necessary for you. `install.sh` added you to the `docker` group, and group membership only applies to *new* login sessions. My test ran inside the *same* SSH session that did the install, so I used `sg docker` to work around it. Your next `ssh [server]` is a fresh login and already has the group. I gave you a wrong instruction there.
@@ -241,17 +218,13 @@ Setup done on [server]: Docker CE via get.docker.com, kubectl, k3d, helm, PATH l
 - **security / CTF flavored** → SUID binary, weak permissions, secrets in env, exposed port (defensive angle)
 
 Strongest next three for your stack: nginx, postgres, systemd.
+:::
 
----
-
-### 23:48 · what database? what are you talking about? did you built thi…
-
-**Leon:**
-
+::: prompt 23:48
 what database? what are you talking about? did you built this yourself?
+:::
 
-**Claude Code** · tools: Bash×2
-
+::: reply Bash×2
 Two different things got mixed:
 
 - **"Database" in the `sg` explanation** = the Linux group file `/etc/group`. Not a real database, just the system file that lists who is in which group. `usermod -aG docker leon` writes your name into that file. A running shell doesn't re-read it; a new login does. That's all.
@@ -279,17 +252,13 @@ Try it: `wg track git && wg level 1`
 `wg track nestjs && wg level 1`
 
 Still running: linux, docker, helm, supabase, nextjs, trigger.
+:::
 
----
-
-### 00:02 · the nestjs track seems like it skips the basics
-
-**Leon:**
-
+::: prompt 00:02
 the nestjs track seems like it skips the basics
+:::
 
-**Claude Code** · tools: SendMessage×3, ToolSearch×1
-
+::: reply SendMessage×3, ToolSearch×1
 Fair. Asking the nestjs agent to prepend a basics block: "build it" levels where the check verifies a new endpoint exists, before the debugging ones.
 
 Same note to the nextjs and trigger agents proactively, so all three framework tracks open with a basics block.
@@ -297,17 +266,13 @@ Same note to the nextjs and trigger agents proactively, so all three framework t
 Sent. nestjs gets levels 01–06 (health endpoint → service DI → params/pipes → query → DTO validation → own module), then the 15 debugging levels as 07–21. nextjs and trigger get the same treatment. I'll re-verify each when it comes back.
 
 Open: should k8s also get a basics block (write a Deployment/Service manifest from scratch, expose it, scale it) before the incidents?
+:::
 
----
-
-### 00:03 · yes, add basics for k8s too and all other tracks, that was t…
-
-**Leon:**
-
+::: prompt 00:03
 yes, add basics for k8s too and all other tracks, that was the idea, from total beginner to pro on all the tools
+:::
 
-**Claude Code** · tools: SendMessage×5, Bash×1, Agent×1
-
+::: reply SendMessage×5, Bash×1, Agent×1
 Updating the spec so it's a rule, then pushing it to every agent and spawning one for k8s basics.
 
 Done. Spec now says every track opens with a basics block (~⅓ of levels), then incidents easy → hard, last levels chain two causes.
@@ -316,17 +281,13 @@ Done. Spec now says every track opens with a basics block (~⅓ of levels), then
 - k8s gets 7 build levels first: run a pod → write Deployment → expose Service → ConfigMap env → Secret volume → namespaces/context, then the 18 incidents as 08–25
 
 I'll verify and commit each track as it lands.
+:::
 
----
-
-### 00:05 · add all the tracks you proposed as well and add one for pent…
-
-**Leon:**
-
+::: prompt 00:05
 add all the tracks you proposed as well and add one for pentesting a webapplication so that we have a starting point to test our production setups as well and know what to look out for
+:::
 
-**Claude Code** · tools: TaskStop×17, Bash×16, Agent×12, ToolSearch×1, SendFeedback×1
-
+::: reply TaskStop×17, Bash×16, Agent×12, ToolSearch×1, SendFeedback×1
 Spawning agents for the proposed tracks plus pentesting. The pentesting track will be a deliberately-vulnerable local app you find and fix vulns in, so it doubles as a checklist for hardening your production setups. All defensive, all against your own local targets.
 
 Verifying nestjs first, then answering the concurrency question, then spawning the rest.
@@ -426,17 +387,13 @@ Still holding for your decision: (a) move the build/test loop to [server] and gr
 These stale notifications come from Monitor watchers the killed agents left behind; each re-fires once when touched. They're harmless and there's no active work. I've stopped the agents again and no wargame processes are running.
 
 Not doing more until you decide: (a) build the remaining tracks on [server], one at a time, or (b) local, one at a time. Recommend (a).
+:::
 
----
-
-### 00:16 · can we just do it here one by one?
-
-**Leon:**
-
+::: prompt 00:16
 can we just do it here one by one?
+:::
 
-**Claude Code** · tools: Bash×16, Agent×3, Monitor×1
-
+::: reply Bash×16, Agent×3, Monitor×1
 Yes. Local, strictly one at a time, in the foreground, no background agents. I verify each, fix if needed, commit, then the next. Starting with the k8s basics that are on disk but unverified. First checking the cluster survived the crash.
 
 Cluster survived. 25 levels, 25 solutions present. Verifying the 7 new basics levels first (foreground, one at a time), then the rest.
@@ -496,17 +453,13 @@ I'll report each track as it lands green and gets committed.
 Node lane reports nextjs green. Committing the files now (lane-verified level-by-level); I'll do a final independent re-run when the lanes are idle so I'm not fighting them for memory.
 
 nextjs committed (5 tracks now, 109 levels). Node lane moving to trigger. Waiting on the container and [server] lanes; I'll commit each as it reports.
+:::
 
----
-
-### 00:55 · how are you doing the writes on [server]? i dont get it
-
-**Leon:**
-
+::: prompt 00:55
 how are you doing the writes on [server]? i dont get it
+:::
 
-**Claude Code** · tools: Bash×14, SendMessage×1
-
+::: reply Bash×14, SendMessage×1
 The [server] lane has no magic remote editor. It's all over SSH. Concretely:
 
 1. **Push:** `rsync -az ./ [server]:~/k8s-wargame-remote/` copies the repo up.
@@ -547,30 +500,26 @@ nginx committed. **13 tracks, 236 levels.** Container lane on redis next; [serve
 
 networking committed. **14 tracks, 248 levels.** The container lane did networking but redis and tls are still empty on disk. Checking whether it's still on them.
 
-Station44 lane finished all four. terraform done, and it says bash is complete too (I didn't see a separate bash report). Checking both landed locally and committing.
+[server] lane finished all four. terraform done, and it says bash is complete too (I didn't see a separate bash report). Checking both landed locally and committing.
 
 Both present. bash is pure-shell, so I'll independently verify it locally now; terraform I'll verify if its CLI is on the Mac, else trust the [server] run.
 
 bash independently verified green locally. terraform verified on [server] (CLI not on the Mac). Committing both.
 
-**16 tracks, 272 levels** committed. Station44 lane is fully done. Only redis and tls remain, on the container lane (I nudged it to confirm). Once those two land, I'll build the landing page across all tracks.
+**16 tracks, 272 levels** committed. [server] lane is fully done. Only redis and tls remain, on the container lane (I nudged it to confirm). Once those two land, I'll build the landing page across all tracks.
 
-16 tracks committed, 272 levels, all lane- or independently-verified. Station44 lane fully done and cleaned up. Only redis and tls remain on the container lane. Waiting on those two, then the landing page.
+16 tracks committed, 272 levels, all lane- or independently-verified. [server] lane fully done and cleaned up. Only redis and tls remain on the container lane. Waiting on those two, then the landing page.
 
 Acknowledged. Container lane confirms redis (12 levels) is authored and verifying, tls after. Standing by to commit each.
 
 redis committed. **17 tracks, 284 levels.** Only tls left, then the landing page.
+:::
 
----
-
-### 01:27 · if everything is done, build the landing page, different rep…
-
-**Leon:**
-
+::: prompt 01:27
 if everything is done, build the landing page, different repo, enable github pages, then give me a recap on everything that has been build and how and lets think of a strategy to market that thing
+:::
 
-**Claude Code** · tools: Bash×9, WebFetch×1
-
+::: reply Bash×9, WebFetch×1
 On it. First checking tls is done and whether GitHub CLI is authenticated (needed for Pages).
 
 tls is still building (0 levels), so not everything is done yet. gh is authenticated as leonbubova. I'll scaffold the landing page now against the finished tracks and regenerate when tls lands. First, capturing the shush.love aesthetic and scanning the level data.
@@ -655,17 +604,13 @@ Decisions that are yours:
 - **License** for the open-source core.
 
 Want me to make the wargame repo public with a real README and quickstart, and record the asciinema demo next?
+:::
 
----
-
-### 01:33 · add the explanation of what this is to the wargame repo as w…
-
-**Leon:**
-
+::: prompt 01:33
 add the explanation of what this is to the wargame repo as well, make sure to not expose security issues about the setup, reason about what security issues this project actually has and lets create a github issue about the "making the game multiplayer" part, anything else we could build? how could i monetizse this?
+:::
 
-**Claude Code** · tools: Bash×19, Write×3, TaskStop×1, Edit×1
-
+::: reply Bash×19, Write×3, TaskStop×1, Edit×1
 Good sequencing. First I'll audit the wargame repo for anything about your infrastructure that shouldn't ship, then write the README, then reason about real security issues, then file the multiplayer issue.
 
 Found it: `[server]` (your private host) is baked into the systemd track, install.sh, and the docs. That's infra info that shouldn't ship. Let me see the extent in the docs before scrubbing.
@@ -733,17 +678,13 @@ Layered, OSS core stays free for credibility and reach:
 Sequence: free OSS now → browser demo → Pro subscription → Teams. Teams is where the revenue is; the browser demo is what makes Teams sellable.
 
 One open decision stays yours: the wargame repo itself is still local. Marketing needs either the code public or the hosted browser version. Want me to publish the wargame repo (it's scrubbed and has README + SECURITY now) or start on the try-in-browser track?
+:::
 
----
-
-### 01:41 · now create actual tickets/issues out of everything you propo…
-
-**Leon:**
-
+::: prompt 01:41
 now create actual tickets/issues out of everything you proposed in the marketing approach, all sounds very good, also add ticket to redesign the page, take shush.love and take screenshots, try to land on a similar style, because this is what i like, kaputt.sh and kaputt.dev sound cool, check if available, also i like the idea of kaputt as name, but lets find alternatives, kaputt is a bit to negatively framed, also "repairing" isnt the core game loop, core game loop is doing simple commands incrementally until you understand a stack or tool, then being able to repoeat it multiple times, other than that, good progress
+:::
 
-**Claude Code** · tools: Bash×8
-
+::: reply Bash×8
 Solid direction. Let me check the domains, then create all the issues, including a redesign ticket and a naming ticket with alternatives.
 
 kaputt.sh is **available**; kaputt.dev is **taken**. Alternatives kata.sh, dojo.sh, reps.sh, drills.sh are all available. Now creating labels and all the issues.
@@ -775,17 +716,13 @@ You're right that "kaputt" is off: negative, and the loop isn't repair. The real
 My pick to discuss: **kata.sh** — a code kata is exactly deliberate repeated practice to mastery, it's positive, short, and the domain is free. It also nods to your monkeytype-drill origin. Full alternatives and rationale are in issue #31.
 
 Everything from the naming and redesign is captured as tickets, so nothing's lost. Want me to draft the shush.love redesign against a chosen name, or leave that until you pick one?
+:::
 
----
-
-### 01:47 · for the naming ticket, comment that we decided on kata.sh bu…
-
-**Leon:**
-
+::: prompt 01:47
 for the naming ticket, comment that we decided on kata.sh but will not change the name until later and start with all other high flagged tickets, also the repo is the landing page? does the other code not have to be a repo? are they both in one repo? is that smart?
+:::
 
-**Claude Code** · tools: Bash×6, WebFetch×1, Read×1
-
+::: reply Bash×11, Read×3, WebFetch×1
 On it. Commenting the naming decision, and pulling shush.love's exact styling to start the redesign. First though, the repo question — it's important and I'll answer it clearly at the end.
 
 You're right, I pulled text not pixels. Let me find a headless browser and actually capture shush.love.
@@ -798,41 +735,11 @@ Two PNGs exist from the Chrome capture. Let me verify they're real and look at t
 
 Real full screenshots (2880×8400 desktop, 780×6400 mobile). Let me look at them to design from the actual pixels.
 
----
-
-### 01:50 · [screenshot]
-
-**Leon:**
-
-[screenshot]
-
-**Claude Code** · tools: Read×1
-
 That's the real design — and it's the opposite of the text analysis I got. shush.love is **dark**, not white: near-black background, an elegant **serif** headline with an italic **purple** accent line, muted gray body, a dark rounded demo card, tiny text-link CTAs with arrows, huge whitespace, and a soft radial glow. Redesigning the page to that.
-
----
-
-### 01:50 · [screenshot]
-
-**Leon:**
-
-[screenshot]
-
-**Claude Code** · tools: Bash×3, Read×1
 
 Confirmed on mobile too. Now rebuilding the page in that dark serif style.
 
 Now screenshotting my own redesign to check it against shush.love before pushing.
-
----
-
-### 01:52 · [screenshot]
-
-**Leon:**
-
-[screenshot]
-
-**Claude Code** · tools: Bash×2
 
 The redesign matches shush.love's family — dark, serif headline with the italic purple accent line and `<3`, the demo card reworked into a real terminal transcript of solving a level, subtle arrow CTAs, serif stats and track cards. Committing and pushing (keeping shush's screenshots local, not in the public repo).
 
@@ -864,17 +771,25 @@ Done: **#30 redesign**, **#31 naming**. The other three high-flags each need a d
 - **#13 Teams tier** → a product build (auth, billing, dashboards) that depends on multiplayer (#1) landing first. Not a "start now" without those.
 
 Give me the two repo answers and a platform pick for #2, and I'll move.
+:::
 
----
+::: figure screenshot assets/transcripts/kaputt/s1-01.jpg
+Screenshot 1 — taken by Claude Code during this turn to check its own work
+:::
 
-### 01:53 · the commit is not showimg my real gh account i think
+::: figure screenshot assets/transcripts/kaputt/s1-02.jpg
+Screenshot 2 — taken by Claude Code during this turn to check its own work
+:::
 
-**Leon:**
+::: figure screenshot assets/transcripts/kaputt/s1-03.jpg
+Screenshot 3 — taken by Claude Code during this turn to check its own work
+:::
 
+::: prompt 01:53
 the commit is not showimg my real gh account i think
+:::
 
-**Claude Code** · tools: Bash×3
-
+::: reply Bash×3
 Let me check what email the commits used versus what's on your GitHub account.
 
 Found it. I committed as `[private email]`, but your GitHub account `leonbubova` uses the noreply email `60527436+leonbubova@users.noreply.github.com` (that's your global git config). GitHub links commits by email, so mine show the name but aren't attributed to your account. That was my mistake — I overrode your correct global identity.
@@ -890,42 +805,18 @@ Fixed and verified. GitHub now attributes the commit to **`author_login: leonbub
 - **Cause:** I overrode your correct global git identity with the plain email from your setup notes. That email isn't the one linked to `leonbubova`, so GitHub couldn't attribute it. Won't happen again — both repos now use your account's noreply email.
 
 The two open decisions from before still stand when you want to proceed: monorepo vs two repos, and whether to publish the wargame code now.
+:::
 
----
-
-### 01:56 · monorepo, and publish the wargame, check design once more, t…
-
-**Leon:**
-
+::: prompt 01:56
 monorepo, and publish the wargame, check design once more, the text is stretched a bit, also alignment and size of hero is a bit off, check it with realistic browser sizes and double check with shush.love, match the design more closely
+:::
 
-**Claude Code** · tools: Bash×2, Read×1
-
+::: reply Bash×8, Read×2, Edit×1
 Doing the design refinement first (so the published version is the good one), then the monorepo + publish. Tuning the hero size/width and screenshotting at realistic sizes against shush.love.
 
 Screenshotting the refined version at 1440 and mobile to review.
 
----
-
-### 01:58 · [screenshot]
-
-**Leon:**
-
-[screenshot]
-
-**Claude Code** · tools: Bash×1, Read×1
-
 Much closer to shush now: headline no longer stretched (capped at 66px), hero left-aligned in a reading column with proper top spacing, elegant serif + italic purple accent. Let me grab a clean above-the-fold at a normal 1280×800 to confirm the hero, then set up the monorepo and publish.
-
----
-
-### 01:59 · [screenshot]
-
-**Leon:**
-
-[screenshot]
-
-**Claude Code** · tools: Bash×5, Edit×1
 
 The hero is clean and matches shush.love's family closely now — no stretch, well-proportioned, elegant serif with the italic purple accent. The earlier "ghost" was just a tall-capture glitch. Design done.
 
@@ -954,17 +845,21 @@ Two notes:
 - The legacy Pages builder is superseded by the Actions workflow; its old runs will stop on their own.
 
 The remaining high-flag decision still open is the try-in-browser platform for #2 (killercoda vs self-hosted web terminal). Pick one and I'll start it.
+:::
 
----
+::: figure screenshot assets/transcripts/kaputt/s1-04.jpg
+Screenshot 4 — taken by Claude Code during this turn to check its own work
+:::
 
-### 02:04 · i feel like you didnt change the design at all?
+::: figure screenshot assets/transcripts/kaputt/s1-05.jpg
+Screenshot 5 — taken by Claude Code during this turn to check its own work
+:::
 
-**Leon:**
-
+::: prompt 02:04
 i feel like you didnt change the design at all?
+:::
 
-**Claude Code** · tools: Bash×3
-
+::: reply Bash×3
 Let me check what's actually live right now, byte for byte, rather than trust the deploy.
 
 It is live and it did change — I verified the live CSS is byte-for-byte the dark redesign (Instrument Serif, near-black `#0d0c0f`, purple accent; live and local both 5630 bytes). What you're seeing is your **browser cache** serving the old light page (Pages sets a 10-minute cache).
@@ -982,32 +877,18 @@ To be clear about what changed, since the diff is dramatic:
 - **Track cards:** light cards → dark cards, serif titles, purple count pills
 
 If after a hard reload (Cmd+Shift+R) it still looks light, tell me and I'll dig further, but the live bytes are confirmed to be the dark version.
+:::
 
----
-
-### 02:05 · the horizontal centering and margins dont look great, fix, a…
-
-**Leon:**
-
+::: prompt 02:05
 the horizontal centering and margins dont look great, fix, also fonts dont match, as well as background
+:::
 
-**Claude Code** · tools: Bash×4, Read×1
-
+::: reply Bash×5, Read×1
 Let me pull shush.love's actual fonts and background from its CSS instead of guessing, then fix centering, fonts, and background to match.
 
 Now I have shush's exact tokens. I was using the wrong serif (Instrument Serif → it's **Newsreader**), wrong background (`#0d0c0f` → `#121215`), and wrong accent (`#9b8cff` → `#c4b5fd`). And the layout was left-hugging instead of a centered column. Rewriting to match exactly.
 
 Good, you're seeing the dark version now. I just replaced my guessed values with shush's real ones — **Newsreader** font (I had the wrong serif), `#121215` background, `#c4b5fd` accent, centered column. Let me render it and compare directly to shush.
-
----
-
-### 02:07 · [screenshot]
-
-**Leon:**
-
-[screenshot]
-
-**Claude Code** · tools: Bash×1
 
 This now matches shush closely — Newsreader serif (their exact font), `#121215` background, `#c4b5fd` lavender, centered column with balanced margins. Deploying it.
 
@@ -1021,17 +902,17 @@ What was wrong and is now fixed, pulled from shush.love's own CSS rather than gu
 - **Centering/margins:** was hugging the left edge of a wide page; now a single **880px centered column** so nav, hero, and sections share balanced left/right margins like shush.
 
 If any specific part still reads off to you, point at it (hero, cards, spacing, a color) and I'll tune that piece.
+:::
 
----
+::: figure screenshot assets/transcripts/kaputt/s1-06.jpg
+Screenshot 6 — taken by Claude Code during this turn to check its own work
+:::
 
-### 02:10 · still left hugging, colors and cards were nicer before, also…
-
-**Leon:**
-
+::: prompt 02:10
 still left hugging, colors and cards were nicer before, also general question about the flow of the game, how do i know what to do if i dont know the commands yet, this is literally what i am trying to learn, is that how it works?
+:::
 
-**Claude Code** · tools: Bash×3, Read×1
-
+::: reply Bash×4, Read×1
 Three separate things — let me take them in order, starting with your game-flow question because it matters most.
 
 **"How do I know what to do if I don't know the commands yet?"** — honest answer: right now the flow is ticket → try → **3 hints that escalate to the actual command** → `wg spoil` shows the full solution → then you `wg reset` and repeat until you can do it without hints. So you're not expected to already know the command. Hint 3 literally hands it to you; the learning is in doing it, then repeating from memory. The "basics" block at the start of each track is the gentlest on-ramp (it asks you to *create* something simple).
@@ -1039,16 +920,6 @@ Three separate things — let me take them in order, starting with your game-flo
 But you've found a real gap: for a **total** beginner there's no upfront "here are the ~10 commands this track uses" primer before the first challenge. The hints teach reactively, not proactively. That's a design decision worth making deliberately, not a given. Let me check the layout question and then I'll propose the fix and we can decide.
 
 Now the layout. shush uses a **760px centered column** (mine was 880, and its cards were nearly invisible against the background). That's the left-hug and the flat cards. Fixing both: narrower centered column, and cards with real definition and a livelier accent like you had before.
-
----
-
-### 02:13 · [screenshot]
-
-**Leon:**
-
-[screenshot]
-
-**Claude Code** · tools: Bash×1
 
 Fixed. Now it's a narrow 760px centered column (no more left-hug), cards have real definition and brighter pills like you had before, on shush's exact palette. Deploying.
 
@@ -1074,28 +945,18 @@ That's a genuine gap you found. Three ways to close it, pick the flavor you want
 I'd do **1 + 2 together**: a primer so you start with the vocabulary, and hints that teach the concept before the answer. That matches your core loop — see the commands, use them incrementally, repeat to mastery.
 
 I filed this as an issue so it's not lost. Want me to build the primer (option 1) now? It's small and pure-bash, no infra, so it's safe to do here.
+:::
 
----
+::: figure screenshot assets/transcripts/kaputt/s1-07.jpg
+Screenshot 7 — taken by Claude Code during this turn to check its own work
+:::
 
-### 02:17 · design still doesnt really look like shush? you have all the…
-
-**Leon:**
-
+::: prompt 02:17
 design still doesnt really look like shush? you have all the code and images, can you not compare? are you not seing the images correctly? whats wrong?
+:::
 
-**Claude Code** · tools: Read×1
-
+::: reply Bash×3, Read×2
 Fair challenge. Let me actually put them side by side and stop guessing — I'll re-read shush's screenshot and compare it structurally to my current render.
-
----
-
-### 02:17 · [screenshot]
-
-**Leon:**
-
-[screenshot]
-
-**Claude Code** · tools: Bash×2, Read×1
 
 I see both images clearly, and now I can name exactly what's off — it's not colors or font anymore, it's **structure**:
 
@@ -1104,16 +965,6 @@ I see both images clearly, and now I can name exactly what's off — it's not co
 3. shush is extremely sparse overall — huge empty space. Mine is content-dense (I have real sections to show), but I can give the hero the same breathing room.
 
 Fixing those three now.
-
----
-
-### 02:19 · [screenshot]
-
-**Leon:**
-
-[screenshot]
-
-**Claude Code** · tools: Bash×1
 
 This now matches shush's structure — airy hero filling the screen, the faint concentric-ring background, narrow centered column. One accuracy fix: shush anchors the hero content near the top, not vertically centered. Applying that and deploying.
 
@@ -1128,17 +979,21 @@ To answer your direct question: yes, I can see both images correctly. The reason
 What I can't replicate 1:1: shush is a single sparse hero with a huge empty scroll. Your page has real content to show (how-it-works, the 18 tracks, how-to-play), so it's denser by necessity — but it now uses the same visual language throughout.
 
 If a specific element still reads wrong, point at it and I'll tune that one thing. Otherwise the beginner-primer question from before is still open: want me to build `wg cheatsheet` (per-track command primer) so a true beginner isn't lost at level 1?
+:::
 
----
+::: figure screenshot assets/transcripts/kaputt/s1-08.jpg
+Screenshot 8 — taken by Claude Code during this turn to check its own work
+:::
 
-### 02:24 · start working on the 5 most important tickets, update ticket…
+::: figure screenshot assets/transcripts/kaputt/s1-09.jpg
+Screenshot 9 — taken by Claude Code during this turn to check its own work
+:::
 
-**Leon:**
-
+::: prompt 02:24
 start working on the 5 most important tickets, update tickets as needed
+:::
 
-**Claude Code** · tools: Bash×12, Read×1, Write×1
-
+::: reply Bash×12, Read×1, Write×1
 Starting. These are all in-CLI bash work on one repo — no containers, no agents, so I'll do them serially and test as I go. First, closing the three high-flags that are already done, then reading the CLI to build on it.
 
 Now I have the CLI structure. Let me check namespace hardcoding (affects the multiplayer ticket scope), then build the new commands.
@@ -1170,17 +1025,13 @@ CI green on the first run — both Docker-free tracks play end-to-end on GitHub'
 **Verified:** git-track harness still ALL GREEN after the CLI rewrite; every new command exercised under real bash; CI green. Nothing skipped, nothing unverified.
 
 Open decision still yours from before: the try-in-browser platform for #2 (killercoda vs self-hosted web terminal). That's the biggest remaining lever and I won't pick it for you.
+:::
 
----
-
-### 02:32 · what is the difference between the two?
-
-**Leon:**
-
+::: prompt 02:32
 what is the difference between the two?
+:::
 
-**Claude Code**
-
+::: reply 
 Both give a visitor a terminal in the browser with a live environment behind it. They differ in who runs the machines.
 
 **Killercoda** (hosted, third party)
@@ -1196,17 +1047,13 @@ Both give a visitor a terminal in the browser with a live environment behind it.
 **Rule of thumb:** Killercoda to *validate demand cheaply* in a week; self-hosted when you're building the *business*. They aren't exclusive — Killercoda as the free funnel now, self-hosted as the paid product later is a normal sequence.
 
 My recommendation: **Killercoda first** for one or two tracks. It's the fast, cheap test of whether strangers actually play, and it costs you nothing if they don't. Build self-hosted only once that's a yes. The multiplayer isolation work (#1) is a prerequisite for self-hosted anyway.
+:::
 
----
-
-### 02:32 · what you mean with runs in github runner?
-
-**Leon:**
-
+::: prompt 02:32
 what you mean with runs in github runner?
+:::
 
-**Claude Code**
-
+::: reply 
 A GitHub Actions **runner** is a throwaway virtual machine that GitHub spins up for you, for free on public repos, every time you push. It's the machine that executes your CI workflow.
 
 What happens on each push to `kaputt`:
@@ -1222,17 +1069,13 @@ So the game is literally **being played to completion on GitHub's computer** on 
 Why only git and bash: those two tracks need nothing but a shell. The other 16 need Docker (or k3d, or the Supabase stack), and while runners do have Docker, spinning up a k3d cluster per push is slow and flaky. Keeping CI to the Docker-free tracks makes it fast and reliable. The heavy tracks stay verified by the local harness, which is what we did.
 
 Practical value: if anyone (you, a contributor, a future agent) breaks `bin/wg` or `lib/common.sh`, CI goes red before it reaches the public site. That's the safety net that didn't exist before.
+:::
 
----
-
-### 02:34 · ok, i dont want killercoda, we go selfhosted but only for on…
-
-**Leon:**
-
+::: prompt 02:34
 ok, i dont want killercoda, we go selfhosted but only for one or two tracks, that are very cheap to run
+:::
 
-**Claude Code** · tools: Bash×17, Read×2, Edit×1
-
+::: reply Bash×17, Read×2, Edit×1
 Right call for a cheap MVP. git and bash are the two: pure shell, no Docker inside, so each visitor costs one tiny locked-down container. Here's the design, then I'll build it.
 
 - **ttyd** (web terminal) on [server] spawns a fresh container per browser session running your real `wg`.
@@ -1264,17 +1107,17 @@ The browser playground is live and proven end to end.
 - then I wire the "try it in your browser" button on the landing page
 
 Say the word on the domain and I'll do the proxy and the CTA.
+:::
 
----
+::: figure screenshot assets/transcripts/kaputt/s1-10.jpg
+Screenshot 10 — taken by Claude Code during this turn to check its own work
+:::
 
-### 02:46 · write a ticket for going public with the browser shell. then…
-
-**Leon:**
-
+::: prompt 02:46
 write a ticket for going public with the browser shell. then explain the architecture, how did you make this work how is the shell connected to the browser? how is it so responsive
+:::
 
-**Claude Code** · tools: Bash×1
-
+::: reply Bash×1
 Creating the ticket first, then the explanation.
 
 Ticket filed: **#33 — Go public with the browser shell** (domain → Caddy TLS + rate limiting → ttyd on loopback → firewall 80/443 → security pass → landing-page CTA → outside smoke test). Depends on #31 for the domain.
@@ -1321,28 +1164,14 @@ Ranked by leverage, with the sequencing that makes each one pay off:
 5. **#9 SEO per-track/per-level pages** — 294 long-tail pages generated from data you already have in `levels.json`. Unblocked today, compounds forever, runs itself once built.
 
 The revenue prize, **#13 Teams**, sits right behind #1 — I left it out of the five only because it can't start until multiplayer isolation lands.
+:::
 
----
-
-### 02:50 · start working on those 5 tickets, update them when hitting m…
-
-**Leon:**
-
+::: prompt 02:50
 start working on those 5 tickets, update them when hitting milestones or finished
+:::
 
-**Claude Code** · tools: Bash×8, Agent×3, Write×1, Read×1
-
+::: reply Bash×27, Read×4, Agent×3, Write×1, Edit×1
 Starting. I'll delegate the two pure-writing tasks (11 primers, launch drafts) to text-only agents — no Docker, so no repeat of the resource problem — and do the code and infra work myself, serially. First checking the recording tools and launching the writers.
-
----
-
-### 02:56 · [screenshot]
-
-**Leon:**
-
-[screenshot]
-
-**Claude Code** · tools: Bash×19, Read×3, Edit×1
 
 All five tickets have moved, four are finished, and the last one's verification is running. Here's where everything stands.
 
@@ -1366,17 +1195,29 @@ All five tickets have moved, four are finished, and the last one's verification 
 Playground redeployed on [server] with the shell track; CI matrix now plays shell/git/bash; README table fixed (tls has 10 levels).
 
 Nothing is waiting on you. The NS-refactor commit lands automatically when the verification finishes; I'll report the result.
+:::
 
----
+::: figure screenshot assets/transcripts/kaputt/s1-11.jpg
+Screenshot 11 — taken by Claude Code during this turn to check its own work
+:::
 
-### 03:28 · done?
+::: figure screenshot assets/transcripts/kaputt/s1-12.jpg
+Screenshot 12 — taken by Claude Code during this turn to check its own work
+:::
 
-**Leon:**
+::: figure screenshot assets/transcripts/kaputt/s1-13.jpg
+Screenshot 13 — taken by Claude Code during this turn to check its own work
+:::
 
+::: figure screenshot assets/transcripts/kaputt/s1-14.jpg
+Screenshot 14 — taken by Claude Code during this turn to check its own work
+:::
+
+::: prompt 03:28
 done?
+:::
 
-**Claude Code** · tools: Bash×3, Edit×1
-
+::: reply Bash×3, Edit×1
 Not quite — the k8s+helm verification is still running. Let me check where it is.
 
 Not done. 12 of 45 levels through, all green so far, currently on k8s 13 (target-port). Roughly 30 more minutes for the rest of k8s plus the 20 helm levels.
@@ -1400,17 +1241,13 @@ Done. The last piece landed: namespace refactor committed, CI green, #1 updated.
 **One decision is yours before #1 goes further.** The remaining work touches all 19 tracks, so the approach matters. Two options are on the ticket; my recommendation: give each player their own kubeconfig context pointing at `wg-<player>`, so every hint can keep saying `wg` and no markdown gets templated. Say yes and I'll do the semantic pass; say no and I'll template the docs instead.
 
 Everything else is idle and clean: no background jobs, no uncommitted work, playground running on [server].
+:::
 
----
-
-### 03:51 · man not working in interactive shell, #32 open sub item deci…
-
-**Leon:**
-
+::: prompt 03:51
 man not working in interactive shell, #32 open sub item decision pls, i want to know how many levels are in the track i am working on right now, and what level i am in, remove the streak i dont want to see it everytime, id rather see level all the time, also i think on moving to next level the pwd should change to the one needed in the level? or is moving to the correct dir also a skill that needs to be trained?
+:::
 
-**Claude Code** · tools: Bash×12, Agent×1
-
+::: reply Bash×12, Agent×1
 Five distinct things — taking all of them. Quick answers first, then building:
 
 - **`man` broken**: the playground image is debian-slim, which strips man pages. Real bug for the shell track's level 12. Fixing in the image.
@@ -1455,17 +1292,13 @@ Two truths: `wg` is a subprocess, and a subprocess **cannot change your shell's 
 **The catch:** dind needs `--privileged`, which weakens the sandbox versus today's network-less containers. Fine for a trusted team on your own host, not for anonymous strangers. So the clean split is: public free tier stays as it is (hardened, Docker-free tracks), team tier gets the dind sidecar.
 
 **Yes or no on option 2?** A yes and I build the per-player sidecar next.
+:::
 
----
-
-### 04:07 · yes go with option 2 for everyone already, lets find a fix f…
-
-**Leon:**
-
+::: prompt 04:07
 yes go with option 2 for everyone already, lets find a fix for the less security, build it then
+:::
 
-**Claude Code** · tools: Bash×44, WebFetch×1, Edit×1, Read×1
-
+::: reply Bash×44, WebFetch×1, Edit×1, Read×1
 Decision recorded. The security fix I'll go with is the standard one for exactly this problem: **Sysbox**, a container runtime that runs Docker-in-Docker *without* `--privileged` (user namespaces + syscall trapping; it even supports k3d inside). Plus defense in depth: no egress (images pre-baked into the sandbox), hard resource caps, session TTL. Verifying Sysbox actually supports [server]'s Ubuntu 24.04 before committing to it, and checking the host in parallel.
 
 The remote build kicked off but the ssh session stayed attached to it, so that call went to the background. Two independent checks: what the call printed so far, and the live build log on [server].
@@ -1533,17 +1366,17 @@ Also made every track's startup offline-safe (pull only if missing), which helps
 - **#33 go public** — needs the domain decision (kata.sh) before I put Caddy + TLS in front and wire the landing-page CTA.
 
 Nothing is running in the background; repo, tickets, and memory are up to date.
+:::
 
----
+::: figure screenshot assets/transcripts/kaputt/s1-15.jpg
+Screenshot 15 — taken by Claude Code during this turn to check its own work
+:::
 
-### 13:44 · what happens if i just rm -rf my player dir?
-
-**Leon:**
-
+::: prompt 13:44
 what happens if i just rm -rf my player dir?
+:::
 
-**Claude Code**
-
+::: reply 
 Depends which "player dir" — there are two, and they behave differently.
 
 **Locally: `rm -rf ~/.k8s-wargame`**
@@ -1558,17 +1391,13 @@ Depends which "player dir" — there are two, and they behave differently.
   - The pre-baked Node deps and terraform mirror lived in your home. They can't be re-downloaded offline, so nextjs/nestjs/trigger/pentest/terraform are dead for the rest of that session. shell/git/bash/k8s/docker/postgres/redis/nginx all keep working.
 
 Two cheap hardenings I'd suggest: have `wg start` re-merge the kubeconfig when it's missing, and move the pre-baked deps out of home (into `/opt/kaputt/cache`, symlinked in) so a nuked home costs you only your progress. Want them? Small, and honestly it makes a nice shell-track lesson: "this is why `rm -rf` in the wrong place hurts."
+:::
 
----
-
-### 13:46 · convince me that that is really needed, why is a new browser…
-
-**Leon:**
-
+::: prompt 13:46
 convince me that that is really needed, why is a new browser tab not enough?
+:::
 
-**Claude Code**
-
+::: reply 
 You're right, and I shouldn't have proposed it. A new tab is enough.
 
 **The case against building it:**
@@ -1580,20 +1409,16 @@ You're right, and I shouldn't have proposed it. A new tab is enough.
 **Where a new tab genuinely isn't enough:** only the **local** install, where `rm -rf ~/.k8s-wargame` loses real progress. But that's correct behavior — deleting a tool's state directory resets it, exactly like any `~/.config/…`. If progress ever matters enough to protect, it'll be because it lives server-side (leaderboards, accounts), which is a different feature, not a symlink.
 
 Verdict: drop it. I'll leave it as one line in the shell track's `rm -rf` lesson: "you just deleted your home; in the sandbox, that's what a new tab is for."
-
----
+:::
 
 
 ## Session 2 — 2026-09-02 · the "teach-first" rework (#35, PR #36)
 
-### 14:10 · i added a comment do #35
-
-**Leon:**
-
+::: prompt 14:10
 i added a comment do #35
+:::
 
-**Claude Code** · tools: Bash×6
-
+::: reply Bash×6
 Loaded: global CLAUDE.md + rules (fix-and-test, no-fluff, scannable-output). No project CLAUDE.md/notes visible here. Checking #35 now.
 
 #35 rewritten with your decisions (verified: new title live).
@@ -1606,31 +1431,23 @@ Loaded: global CLAUDE.md + rules (fix-and-test, no-fluff, scannable-output). No 
 - order: CLI + spec + `bash` track as reference → review → 16 tracks in parallel → site
 
 Open: go on step 1 (CLI + spec + bash track)?
+:::
 
----
-
-### 14:12 · what you mean go on step1?
-
-**Leon:**
-
+::: prompt 14:12
 what you mean go on step1?
+:::
 
-**Claude Code**
-
+::: reply 
 Step 1 = start building: edit `bin/wg` (`LEARN_LEVELS`, free hints, `wg help`), update `docs/track-spec.md`, and rewrite the ~8 learn-level READMEs of the `bash` track as the reference. Then you play it and say "ist gut" before I fan out to the other 16 tracks.
 
 I stopped because it's a ~150-file content job. Say "go" and I start.
+:::
 
----
-
-### 14:14 · /goal do every level like that one by one until you are fini…
-
-**Leon:**
-
+::: prompt 14:14
 /goal do every level like that one by one until you are finished and ready to present a human testable level that should satisfy me
+:::
 
-**Claude Code** · tools: Bash×30, Agent×17, ToolSearch×1
-
+::: reply Bash×30, Agent×17, ToolSearch×1
 Acknowledged: full build of #35 across all tracks, ending in a playable reference. Starting with repo orientation and the CLI.
 
 Writing the six bash learn-level READMEs now.
@@ -1684,17 +1501,13 @@ bin/wg track bash && bin/wg start && bin/wg level 1
 ```
 
 Open: your `wargame-site/` dir is a stale copy with uncommitted `index.html`/`style.css` edits — the live site is `k8s-wargame/site`; left yours untouched.
+:::
 
----
-
-### 14:22 · I told you to not make it a readme. No, I think it was in th…
-
-**Leon:**
-
+::: prompt 14:22
 I told you to not make it a readme. No, I think it was in the comment pretty sure. So why did you do it like that? Isn't it now more complicated than I wanted it to be? Now it's a different step. I just wanted more steps with different content.
+:::
 
-**Claude Code**
-
+::: reply 
 You're right, I misread it. "No readme" in your comment meant no lesson text at all. I took it as "no separate LESSON.md file" and put the lesson into the level README instead. That's the same reading-first thing you said no to, just relocated.
 
 What you asked for: teaching by doing, not reading. More levels, each smaller, each introducing one new thing, so the ticket alone is enough. Plus `wg help` for a command refresh. No phases, no lesson blocks.
@@ -1706,17 +1519,13 @@ Fix plan for PR #36:
 - renumber, update `solutions.sh`, run the harness per track
 
 Open: do the revert + start with `bash` as the reference track, or kill the PR and start clean?
+:::
 
----
-
-### 14:23 · revert it and do all
-
-**Leon:**
-
+::: prompt 14:23
 revert it and do all
+:::
 
-**Claude Code** · tools: Agent×15, Bash×7
-
+::: reply Agent×15, Bash×7
 Reverting now, then rebuilding as extra levels.
 
 Launching wave 1 (15 tracks in parallel). Docker, k8s, and helm run afterwards since their wipes clash with the others.
@@ -1772,32 +1581,24 @@ Still waiting.
 Twelve done. Waiting on tls, nextjs, supabase.
 
 Thirteen done. Waiting on tls and supabase.
+:::
 
----
-
-### 14:48 · status
-
-**Leon:**
-
+::: prompt 14:48
 status
+:::
 
-**Claude Code**
-
+::: reply 
 Wave 1: 13/15 tracks done, all harness-green.
 - done: bash 18, redis 18, terraform 16, git 28, networking 17, pentest 16, systemd 12, trigger 24, nestjs 27, postgres 20, nginx 17, linux 29, nextjs 28
 - running: tls, supabase (stack booting)
 - next: wave 2 sequentially (docker → k8s → helm), then site rebuild, commit, PR update
+:::
 
----
-
-### 14:48 · continue with wave 2
-
-**Leon:**
-
+::: prompt 14:48
 continue with wave 2
+:::
 
-**Claude Code** · tools: Agent×2, Bash×2
-
+::: reply Agent×2, Bash×2
 Starting k8s now (k3d, no clash). helm follows k8s; docker waits for tls to finish since its wipe removes every `wg-` container.
 
 k8s agent running. Docker and helm start when tls and k8s report.
@@ -1811,29 +1612,21 @@ Running: supabase, k8s, docker. helm starts after k8s reports.
 Docker agent is on its harness run. Waiting.
 
 k8s harness running too. Waiting on supabase, k8s, docker.
+:::
 
----
-
-### 15:00 · status
-
-**Leon:**
-
+::: prompt 15:00
 status
+:::
 
-**Claude Code** · tools: Bash×1
-
+::: reply Bash×1
 Three harnesses running: supabase (24 levels), docker (27), k8s (33). helm starts after k8s; then site rebuild, commit, PR update.
+:::
 
----
-
-### 15:01 · 35minutes for one agent
-
-**Leon:**
-
+::: prompt 15:01
 35minutes for one agent
+:::
 
-**Claude Code** · tools: Bash×2
-
+::: reply Bash×2
 Orphans killed. Nothing else to request until the three harnesses report.
 
 Still waiting on supabase, docker, k8s harnesses.
@@ -1845,17 +1638,13 @@ k8s: server restarted, testing the 8 new levels first, then the full run. Waitin
 Waiting.
 
 *(repeated 3×)*
+:::
 
----
-
-### 15:11 · my mac is quite slow
-
-**Leon:**
-
+::: prompt 15:11
 my mac is quite slow
+:::
 
-**Claude Code** · tools: Bash×2
-
+::: reply Bash×2
 Killed two runaway `count-lines.sh` loops (orphans from a 13 h old check, 32% CPU each) and two stale nestjs dev servers from yesterday. The rest is the Docker VM running three harnesses at once; that eases once supabase and docker finish. helm will run alone after k8s.
 
 Waiting on k8s, docker, supabase.
@@ -1865,17 +1654,13 @@ Waiting.
 *(repeated 3×)*
 
 k8s: all 8 new levels green, full 33-level run now in progress. Waiting on k8s, docker, supabase.
+:::
 
----
-
-### 15:16 · status?
-
-**Leon:**
-
+::: prompt 15:16
 status?
+:::
 
-**Claude Code** · tools: Bash×13, SendMessage×2, ToolSearch×1, Agent×1
-
+::: reply Bash×13, SendMessage×2, ToolSearch×1, Agent×1
 - supabase → harness finished (process gone); agent hasn't reported yet, stack still up
 - docker → full run, 23 min in
 - k8s → full 33-level run, started 2 min ago (8 new levels already green individually); expect ~45–60 min
@@ -1940,17 +1725,13 @@ bin/wg track bash && bin/wg start && bin/wg level 1
 ```
 
 Open: merge after you've played a track, or want changes first?
+:::
 
----
-
-### 20:34 · all good?
-
-**Leon:**
-
+::: prompt 20:34
 all good?
+:::
 
-**Claude Code** · tools: Bash×1
-
+::: reply Bash×1
 Yes.
 - tree clean, everything pushed
 - PR #36 open, mergeable
@@ -1958,17 +1739,13 @@ Yes.
 - all 17 tracks verified green
 
 Open: merge, or play first?
+:::
 
----
-
-### 20:53 · what can i play, is readme up to date? what about website, i…
-
-**Leon:**
-
+::: prompt 20:53
 what can i play, is readme up to date? what about website, is there a tutorial?
+:::
 
-**Claude Code** · tools: Bash×1
-
+::: reply Bash×1
 What to play now (branch `teach-first`, all green):
 - never used a terminal → `wg track shell` (14 levels, no Docker)
 - shell basics known → `wg track bash` (18) or `git` (28), plain files, no Docker
@@ -1982,20 +1759,16 @@ README: up to date. Counts, `wg help`, quickstart, "build it block first" all ma
 Website (`site/`, deploys on merge): index has the 60-second quickstart plus per-track and per-level pages (428 regenerated). There is no separate tutorial page. The tutorial is the `shell` track itself, and the site says "start here". 
 
 Open: add a "How to play" section to the site and the one README line?
-
----
+:::
 
 
 ## Session 3 — 2026-09-15 · finding it again two weeks later
 
-### 13:53 · search my wargame "kaputt" that also has a git repo
-
-**Leon:**
-
+::: prompt 13:53
 search my wargame "kaputt" that also has a git repo
+:::
 
-**Claude Code** · tools: Bash×2
-
+::: reply Bash×2
 Loaded: global CLAUDE.md, rules (fix-and-test, no-fluff, scannable-output), memory index. No project CLAUDE.md/workflow.md in `~/vault`.
 
 Searching for "kaputt" in vault and nearby dirs.
@@ -2006,34 +1779,26 @@ Found it. Two checkouts of the same repo (`github.com/leonbubova/kaputt`):
 - `.../UP003-ai-backend/wargame-site/` → landing page checkout (older: 18 tracks / 294 levels)
 
 Site: https://leonbubova.github.io/kaputt/ · launch notes in `k8s-wargame/docs/launch/show-hn.md` (rename to kata.sh planned).
+:::
 
----
-
-### 13:53 · can you move it so the wargames folder?
-
-**Leon:**
-
+::: prompt 13:53
 can you move it so the wargames folder?
+:::
 
-**Claude Code** · tools: Bash×3
-
+::: reply Bash×3
 Moved.
 
 - `wargames/kaputt` ← `k8s-wargame` (branch `teach-first`, clean)
 - `wargames/kaputt-site` ← `wargame-site` (branch `master`, 2 uncommitted files, ahead 3 / behind 42 of origin)
 
 Open: `kaputt-site` is a stale second checkout of the same repo — merge its 2 local changes into `kaputt` and delete it?
+:::
 
----
-
-### 13:54 · check if its working with that state, if so merge and push, …
-
-**Leon:**
-
+::: prompt 13:54
 check if its working with that state, if so merge and push, is the webpage also in that repo?
+:::
 
-**Claude Code** · tools: Bash×14
-
+::: reply Bash×14
 Done. Merged and pushed.
 
 - Works after move: shell/git/bash tracks all green locally (test state is isolated via `mktemp`), PR #36 CI green
@@ -2050,17 +1815,13 @@ Local terminal:
   ```
 
 Open: `wargames/kaputt-site` is a stale duplicate checkout (its 2 uncommitted CSS tweaks target a stylesheet that no longer exists) — delete it?
+:::
 
----
-
-### 13:59 · gimme steps to get ready
-
-**Leon:**
-
+::: prompt 13:59
 gimme steps to get ready
+:::
 
-**Claude Code** · tools: Bash×1
-
+::: reply Bash×1
 Tools already installed (k3d, helm, kubectl, docker). Only PATH missing.
 
 1. Add `wg` to PATH + reload:
@@ -2076,17 +1837,13 @@ Tools already installed (k3d, helm, kubectl, docker). Only PATH missing.
 4. For Docker-based tracks (k8s, postgres, nginx, …): start Docker Desktop first, then `wg track k8s && wg start`.
 
 Tracks: 19 (`wg track <name>`) — bash, docker, git, helm, k8s, linux, nestjs, networking, nextjs, nginx, pentest, postgres, redis, shell, supabase, systemd, terraform, tls, trigger.
+:::
 
----
-
-### 14:01 · why is the terminal game and the site in two different folde…
-
-**Leon:**
-
+::: prompt 14:01
 why is the terminal game and the site in two different folders now? i thought its one repo?
+:::
 
-**Claude Code** · tools: Bash×1
-
+::: reply Bash×1
 It is one repo. `wargames/kaputt-site` is a leftover second clone of the same repo, not a separate project.
 
 - `wargames/kaputt` → the repo: game (`bin/`, `levels/`) **and** site (`site/`) together, deployed via Pages
@@ -2095,17 +1852,13 @@ It is one repo. `wargames/kaputt-site` is a leftover second clone of the same re
 Nothing in it is worth keeping. Deleting it so there's one folder:
 
 Done. `wargames/` now holds `bandit` and `kaputt` only. Site lives at `kaputt/site/`.
+:::
 
----
-
-### 14:19 · now ready to play?
-
-**Leon:**
-
+::: prompt 14:19
 now ready to play?
+:::
 
-**Claude Code** · tools: Bash×2
-
+::: reply Bash×2
 Ready. Track `shell`, level 1 loaded.
 
 - `~/.zshrc` → `wg` on PATH (fixed duplicate line; `install.sh` dedupe fix pushed, verified by re-run: 1 line)
@@ -2116,17 +1869,13 @@ Ready. Track `shell`, level 1 loaded.
   wg hint        # stuck
   wg next        # after green
   ```
+:::
 
----
-
-### 14:24 · how to list all tracks
-
-**Leon:**
-
+::: prompt 14:24
 how to list all tracks
+:::
 
-**Claude Code** · tools: Bash×9
-
+::: reply Bash×9
 Fixed. `origin/master` now has only the install fix; the kotlin work is back in the working tree, uncommitted.
 
 To list tracks:
@@ -2139,20 +1888,16 @@ Heads-up:
 - `kotlin` track (22 levels) is **untracked / in progress** — another Claude session (started 16:01, cwd `~/vault/wargames`) is writing it right now
 - My earlier `commit -a` had swept its site/CI edits into the pushed install fix → reverted in a follow-up commit, working tree restored to how that session left it
 - Playable now: the other 19 tracks. Leave kotlin alone until that session finishes and commits.
-
----
+:::
 
 
 ## Session 4 — 2026-09-15/16 · kotlin track (parallel session)
 
-### 14:01 · can you add a track for kotlin?
-
-**Leon:**
-
+::: prompt 14:01
 can you add a track for kotlin?
+:::
 
-**Claude Code** · tools: Bash×25, Write×14
-
+::: reply Bash×25, Write×14
 Looking at the project structure to see how tracks are defined.
 
 Kotlin track done, 22 levels, harness `ALL GREEN` (twice), fresh-download `wg start` path verified.
@@ -2164,17 +1909,13 @@ Kotlin track done, 22 levels, harness `ALL GREEN` (twice), fresh-download `wg st
 - Wired → `README.md` table, `docs/ARCHITECTURE.md`, `site/build.sh` blurb + site regenerated (20 tracks / 430 levels), CI job (setup-java + `wg start` + harness), playground Dockerfile (`openjdk-17-jdk-headless`) + preload
 
 Not committed. Not verified: CI job and playground image build (no runner here).
+:::
 
----
-
-### 14:24 · make sure its correct commit and push
-
-**Leon:**
-
+::: prompt 14:24
 make sure its correct commit and push
+:::
 
-**Claude Code** · tools: Bash×4
-
+::: reply Bash×4
 Quick hostile pass over the shell code (bash 3.2 compat, failure paths), then commit on a branch and push.
 
 Committed and pushed as branch `kotlin-track` (`db7373a`), working tree clean.
@@ -2184,32 +1925,24 @@ Committed and pushed as branch `kotlin-track` (`db7373a`), working tree clean.
 - PR creation failed: `gh` can't verify TLS through the sandbox proxy
 
 Open: create the PR yourself → `! gh pr create --fill --head kotlin-track` or https://github.com/leonbubova/kaputt/pull/new/kotlin-track. CI (new kotlin job) and playground image build remain unverified until that runs.
+:::
 
----
-
-### 14:28 · if you think its fine, merge pr, i dont even think we need p…
-
-**Leon:**
-
+::: prompt 14:28
 if you think its fine, merge pr, i dont even think we need prs but can you can create them
+:::
 
-**Claude Code** · tools: Bash×2, Write×2
-
+::: reply Bash×2, Write×2
 Merged. `master` is at `db7373a` on origin, branch `kotlin-track` deleted.
 
 - Saved to memory: kaputt → no PRs, ff-merge to master once harness is green
 - CI kotlin job runs on this push; unverified until it finishes → `! gh run list -L 3` (gh works outside the sandbox)
+:::
 
----
-
-### 14:29 · how do i update my local version? to play the kt track?
-
-**Leon:**
-
+::: prompt 14:29
 how do i update my local version? to play the kt track?
+:::
 
-**Claude Code**
-
+::: reply 
 Your checkout at `~/vault/wargames/kaputt` is already on the merged `master`, nothing to pull. Just:
 
 ```
@@ -2222,17 +1955,13 @@ wg level 1
 Then `wg shell` (or `cd ~/.k8s-wargame/kotlin/app`), edit `src/`, `./run.sh` to see the demo, `wg check`.
 
 If `wg` isn't on PATH: `export PATH=~/vault/wargames/kaputt/bin:$PATH`.
+:::
 
----
-
-### 14:29 · what you mean with wg shell?
-
-**Leon:**
-
+::: prompt 14:29
 what you mean with wg shell?
+:::
 
-**Claude Code**
-
+::: reply 
 `wg shell` is a built-in command of the game CLI (`bin/wg`), not a Kotlin thing. For tracks with a machine or working directory it drops you into a subshell in the right place. For kotlin it just does `cd ~/.k8s-wargame/kotlin/app` and starts your shell there.
 
 Equivalent by hand:
@@ -2242,17 +1971,13 @@ cd ~/.k8s-wargame/kotlin/app
 ```
 
 Optional. Any editor/terminal pointed at that folder works. `wg check` runs from anywhere.
+:::
 
----
-
-### 14:33 · am i stupid or is the wargame becoming really unintuitive? f…
-
-**Leon:**
-
+::: prompt 14:33
 am i stupid or is the wargame becoming really unintuitive? for example the kotlin track is not handholding at all, are other levels better in that way? i wanted a beginner level
+:::
 
-**Claude Code** · tools: Bash×1
-
+::: reply Bash×1
 Not you. Let me compare against the tracks that were built for beginners.
 
 Not you. Two different things carry the "beginner" label:
@@ -2273,31 +1998,23 @@ Fix I'd do: prepend 5 lesson levels in the shell style before the current 01, so
 Each with the "Lesson: …", "Try it: …", "Your task: …" layout, hints free of jargon, and the primer shown later instead of at level 1.
 
 Open: do that ramp now (kotlin becomes 27 levels)?
+:::
 
----
-
-### 14:33 · like even for a complete coding beginner
-
-**Leon:**
-
+::: prompt 14:33
 like even for a complete coding beginner
+:::
 
-**Claude Code** · tools: Bash×1
-
+::: reply Bash×1
 Yes, that's a real gap: nothing in kotlin (or any non-shell track) starts from zero. I'll prepend an 8-level lesson block in the shell-track style (edit → run → variables → maths → functions → if → lists/loops → classes → null), so the existing levels become 09–30. Checking the shell track's tone first.
 
 API Error: Can't reach the API server — check your internet or DNS (ENOTFOUND)
+:::
 
----
-
-### 08:30 · status?
-
-**Leon:**
-
+::: prompt 08:30
 status?
+:::
 
-**Claude Code** · tools: Agent×18, Bash×7, Write×2
-
+::: reply Agent×18, Bash×7, Write×2
 Nothing written yet. I've read the shell track's lesson style and am about to add the 8 beginner lessons to the kotlin generator and rebuild. Continuing now.
 
 Two things: the splice failed on a quoting clash (fixing by writing the lesson block as its own file), and I'll take the new instruction: after kotlin, add lesson blocks to the other 18 tracks.
@@ -2338,4 +2055,7 @@ tls done, lessons 01–07 verified with real openssl, 08 and the docker levels u
 
 pentest done, unverified because the sandbox blocks `listen()` on any port (7 lessons, now 23). Same restriction likely hits nestjs/nextjs. 3 running.
 
----
+nextjs done, unverified for the same listen() reason but build-checked (8 lessons, now 36). 2 running: nestjs, trigger.
+
+trigger done, 23 of 31 levels verified; 8 blocked by the same listen() restriction (7 lessons, now 31). 1 running: nestjs.
+:::

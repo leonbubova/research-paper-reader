@@ -60,6 +60,18 @@
         var i = store.length; store.push({type:'figure', tag:tag, src:src, cap:cap.trim()});
         return '\n\n@@BLK'+i+'@@\n\n';
       });
+    // ::: prompt <time> ... :::  (what the user typed, transcripts)
+    body = body.replace(/^:::\s*prompt\s+(\S+)\s*\n([\s\S]*?)\n:::\s*$/gm,
+      function(_, ts, inner){
+        var i = store.length; store.push({type:'prompt', ts:ts, md:inner.trim()});
+        return '\n\n@@BLK'+i+'@@\n\n';
+      });
+    // ::: reply [tools] ... :::  (the agent's reply, transcripts)
+    body = body.replace(/^:::\s*reply\s*(.*)\n([\s\S]*?)\n:::\s*$/gm,
+      function(_, tools, inner){
+        var i = store.length; store.push({type:'reply', tools:tools.trim(), md:inner.trim()});
+        return '\n\n@@BLK'+i+'@@\n\n';
+      });
     // ::: added [optional title] ... :::
     body = body.replace(/^:::\s*added\s*(.*)\n([\s\S]*?)\n:::\s*$/gm,
       function(_, title, inner){
@@ -86,6 +98,16 @@
       return '<details class="fig"><summary><span class="ico" aria-hidden="true">▸</span> '+ labelHtml +
         ' <span class="tag">'+ esc(b.tag) +'</span></summary>'+
         '<div class="body">'+ pic + figcap +'</div></details>';
+    }
+    if(b.type==='prompt'){
+      var gist = b.md.split('\n')[0].replace(/\s+/g,' ').trim();
+      if(gist.length > 64) gist = gist.slice(0,64).replace(/\s+\S*$/,'') + '\u2026';
+      return '<section class="prompt"><h3 class="sr">'+ esc(b.ts) +' \u00b7 '+ esc(gist) +'</h3>'+
+        '<p class="prompt-h"><span class="who">Leon</span><span class="ts">'+ esc(b.ts) +'</span></p>'+ marked.parse(b.md) +'</section>';
+    }
+    if(b.type==='reply'){
+      return '<div class="reply"><p class="reply-h"><span class="who">Claude Code</span>'+
+        (b.tools ? '<span class="tools">'+ esc(b.tools) +'</span>' : '') +'</p>'+ marked.parse(b.md) +'</div>';
     }
     if(b.type==='added'){
       return '<aside class="added" aria-label="Added explanation, not part of the original lecture">'+
