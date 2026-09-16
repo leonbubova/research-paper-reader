@@ -25,7 +25,7 @@ Repo: [github.com/leonbubova/soft-landing](https://github.com/leonbubova/soft-la
 :::
 
 ::: added How to read this
-Each `### HH:MM` section is one turn. **Leon** is what was typed into Claude Code, exactly as typed. **Claude Code** is every text message the main agent wrote back during that turn, in order. Screenshots pasted into the chat are embedded, collapsed, right under the prompt they came with. Headings inside replies were demoted so the table of contents only lists turns.
+Each blue box is one prompt **Leon** typed into Claude Code, exactly as typed, with the time. Below it, marked **Claude Code**, is every text message the main agent wrote back during that turn, in order, plus which tools it called and how often. Screenshots are embedded, collapsed: the ones Leon pasted sit under his prompt, the ones Claude took to check its own work sit under its reply. The sidebar on the left lists every turn by time and first words.
 
 Things worth watching for:
 

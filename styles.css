@@ -369,7 +369,7 @@ footer a{color:var(--fg-faint)}
   background:color-mix(in srgb, var(--accent) 12%, var(--bg-raise)); border-left:4px solid var(--accent)}
 .prompt .prompt-h,.reply .reply-h{font-family:var(--sans); font-size:.72rem; letter-spacing:.13em; text-transform:uppercase; font-weight:700; margin:0 0 .5rem; display:flex; align-items:baseline; gap:.7rem}
 .prompt .prompt-h{color:var(--accent)}
-.prompt .prompt-h .ts,.reply .reply-h .tools{font-weight:400; letter-spacing:0; text-transform:none; color:var(--fg-faint); font-size:.8rem}
+.prompt .prompt-h .ts,.reply .reply-h .tools{margin-left:.7rem; font-weight:400; letter-spacing:0; text-transform:none; color:var(--fg-faint); font-size:.8rem}
 .prompt p{margin:0 0 .6rem; font-size:1.02rem; color:var(--fg); white-space:pre-wrap}
 .prompt > :last-child{margin-bottom:0}
 .reply{margin:0 0 1.5rem; padding:0 0 0 1.3rem; border-left:1px solid var(--line)}
