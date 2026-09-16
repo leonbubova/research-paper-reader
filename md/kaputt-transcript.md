@@ -16,6 +16,16 @@ learning_outcomes:
 provenance: Prompts and Claude Code's replies are reproduced verbatim from the session logs, typos included. Tool calls, tool output and subagent reports are omitted; only the per-turn tool counts are shown. Repeated one-line progress updates are collapsed.
 ---
 
+::: added Where this starts
+The transcript begins mid-thought, so here is the missing context.
+
+Leon wanted to learn infrastructure tools (Kubernetes, Docker, Linux, git and so on) and the idea was to learn them by **typing**. The first attempt, before this transcript, was a set of custom text corpora for [monkeytype](https://monkeytype.com): chapters of real `kubectl` commands to type through, the way you would practise a language by copying sentences. The very first prompt below asks for a better version of that.
+
+Claude's answer made the flaw obvious: typing text you can see is copying, not learning. So the second prompt changes the goal. Instead of typing commands from a sheet, the environment should actually be broken and the only way through is to run the real commands until they stick. That is the moment the project stops being a typing drill and becomes **kaputt**, a CLI wargame in the spirit of OverTheWire's Bandit: a level breaks something, you fix it, `wg check` confirms it, you move on.
+
+From there the night escalates on its own: one k8s track becomes eighteen tracks, a test harness, a public repo, a landing page, GitHub issues, a browser playground and a per-visitor sandbox. The later sessions two weeks on are about finding the project again, adding a Kotlin track, and realising the levels still assume too much.
+:::
+
 ::: added How to read this
 Each `### HH:MM` section is one turn. **Leon** is what was typed into Claude Code, exactly as typed. **Claude Code** is every text message the main agent wrote back during that turn, in order, before the next prompt. `[screenshot]` marks an image pasted into the chat. Headings inside replies were demoted so the table of contents only lists turns.
 
