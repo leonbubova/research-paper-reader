@@ -25,7 +25,7 @@ Repo: [github.com/leonbubova/soft-landing](https://github.com/leonbubova/soft-la
 :::
 
 ::: added How to read this
-Each blue box is one prompt **Leon** typed into Claude Code, exactly as typed, with the time. Below it, marked **Claude Code**, is every text message the main agent wrote back during that turn, in order, plus which tools it called and how often. Screenshots are embedded, collapsed: the ones Leon pasted sit under his prompt, the ones Claude took to check its own work sit under its reply. The sidebar on the left lists every turn by time and first words.
+Each turn starts with a rule and a small `leon · HH:MM` label, followed by the prompt Leon typed into Claude Code, exactly as typed. Below it, under `claude code`, is every text message the main agent wrote back during that turn, in order, plus which tools it called and how often. Screenshots are embedded, collapsed: the ones Leon pasted sit under his prompt, the ones Claude took to check its own work sit under its reply. The sidebar on the left lists every turn by time and first words.
 
 Things worth watching for:
 

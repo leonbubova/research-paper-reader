@@ -27,7 +27,7 @@ From there the night escalates on its own: one k8s track becomes eighteen tracks
 :::
 
 ::: added How to read this
-Each blue box is one prompt **Leon** typed into Claude Code, exactly as typed, with the time. Below it, marked **Claude Code**, is every text message the main agent wrote back during that turn, in order, before the next prompt, plus which tools it called and how often. Screenshots are embedded, collapsed: the ones Leon pasted sit under his prompt, the ones Claude took to check its own work sit under its reply. The sidebar on the left lists every turn by time and first words.
+Each turn starts with a rule and a small `leon · HH:MM` label, followed by the prompt Leon typed into Claude Code, exactly as typed. Below it, under `claude code`, is every text message the main agent wrote back during that turn, in order, before the next prompt, plus which tools it called and how often. Screenshots are embedded, collapsed: the ones Leon pasted sit under his prompt, the ones Claude took to check its own work sit under its reply. The sidebar on the left lists every turn by time and first words.
 
 The project is **kaputt**, a break/fix terminal wargame: each level spins up a real environment (k3d cluster, container, repo), sabotages one thing, hands you a ticket, and `wg check` verifies you fixed it. Repo: [github.com/leonbubova/kaputt](https://github.com/leonbubova/kaputt). Site: [leonbubova.github.io/kaputt](https://leonbubova.github.io/kaputt/).
 
