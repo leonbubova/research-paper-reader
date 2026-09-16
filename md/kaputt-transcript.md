@@ -36,7 +36,7 @@ Things worth watching for:
 - **Prompt length is tiny compared to output.** Most prompts are one line. The long ones are dumps of several thoughts at once, and Claude splits them itself.
 - **Corrections are blunt and short.** "i feel like you didnt change the design at all?" or "revert it and do all" is enough.
 - **Claude checks its own work visually.** During the landing-page redesign it screenshots shush.love and its own page with a headless browser and compares them. Those screenshots are embedded below the replies.
-- **"status?" is a real command.** Long agent runs are polled, not babysat.
+- **"status?" is the whole check-in.** When agents run for half an hour, Leon leaves, comes back, types `status?`, and gets a one-line answer. No watching.
 - **Pushback is asked for.** "convince me that that is really needed" gets a proposal dropped.
 - **The one big failure** is in Session 1 at 00:05: ~18 subagents ran Docker tests at once on an 8 GB laptop.
 :::
